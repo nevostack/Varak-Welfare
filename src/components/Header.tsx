@@ -60,11 +60,11 @@ const Header = () => {
             <div className="flex  items-center -space-x-2 group">
               <img 
                 src="/lovable-uploads/6f963d4c-07e4-448f-9377-5fee8010d0fc.png" 
-                alt="Varak Logo" 
+                alt="HopeHeal NGO Logo" 
                 className="h-12 w-12 sm:h-16 sm:w-16 transition-transform group-hover:scale-105"
               />
               <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
-                Varak
+                HopeHeal
               </span>
             </div>
 
@@ -73,7 +73,7 @@ const Header = () => {
               <NavigationMenuList className="space-x-2">
                 <NavigationMenuItem>
                   <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-rose-50 hover:text-rose-600 focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                    Fundraise For
+                    About Us
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
