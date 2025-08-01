@@ -55,10 +55,10 @@ const StartFundraiser = () => {
           <div className="absolute bottom-20 left-1/4 w-48 h-48 bg-gradient-to-br from-pink-300 to-purple-300 rounded-full blur-3xl"></div>
           
           {/* Decorative patterns */}
-          <div className="absolute top-16 right-16 text-rose-300 text-8xl opacity-30 rotate-12">✨</div>
+          {/* <div className="absolute top-16 right-16 text-rose-300 text-8xl opacity-30 rotate-12">✨</div>
           <div className="absolute bottom-24 right-1/3 text-pink-300 text-6xl opacity-30 -rotate-12">🚀</div>
           <div className="absolute top-1/2 left-16 text-purple-300 text-7xl opacity-30 rotate-45">💎</div>
-          <div className="absolute bottom-1/3 left-1/2 text-rose-300 text-5xl opacity-30">🌟</div>
+          <div className="absolute bottom-1/3 left-1/2 text-rose-300 text-5xl opacity-30">🌟</div> */}
           
           {/* Geometric shapes */}
           <div className="absolute top-32 left-1/2 w-24 h-24 border-4 border-rose-200 rounded-full opacity-40"></div>
@@ -135,9 +135,9 @@ const StartFundraiser = () => {
                         <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-pink-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
                           <Icon className="h-10 w-10 text-white" />
                         </div>
-                        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full flex items-center justify-center">
+                        {/* <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs font-bold">✓</span>
-                        </div>
+                        </div> */}
                       </div>
                       
                       {/* Content */}

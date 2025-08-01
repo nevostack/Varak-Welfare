@@ -6,12 +6,12 @@ import StartFundraiser from "@/components/StartFundraiser";
 import Causes from "@/components/Causes";
 import WhySection from "@/components/WhySection";
 import SuccessStories from "@/components/SuccessStories";
-import FeaturedIn from "@/components/FeaturedIn";
+// import FeaturedIn from "@/components/FeaturedIn";
 import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden main-content">
       <Header />
       <HeroSection />
       <TrendingFundraisers />
@@ -19,7 +19,7 @@ const Index = () => {
       <Causes />
       <WhySection />
       <SuccessStories />
-      <FeaturedIn />
+      {/* <FeaturedIn /> */}
       <Footer />
     </div>
   );

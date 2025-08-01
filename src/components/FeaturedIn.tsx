@@ -1,186 +1,349 @@
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, Award, Shield, CheckCircle, Star, Heart, Users, Globe, Zap } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
-const companyLogos = [{
-  name: "Google",
-  logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
-}, {
-  name: "Microsoft",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
-}, {
-  name: "Apple",
-  logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg"
-}, {
-  name: "Amazon",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
-}, {
-  name: "Meta",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg"
-}, {
-  name: "Netflix",
-  logo: "https://logos-world.net/wp-content/uploads/2020/04/Netflix-Logo.png"
-}, {
-  name: "Tesla",
-  logo: "https://logoeps.com/wp-content/uploads/2013/03/tesla-vector-logo.png"
-}, {
-  name: "IBM",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg"
-}, {
-  name: "Oracle",
-  logo: "https://logos-world.net/wp-content/uploads/2020/09/Oracle-Logo.png"
-}, {
-  name: "Samsung",
-  logo: "https://logos-world.net/wp-content/uploads/2020/04/Samsung-Logo.png"
-}, {
-  name: "Intel",
-  logo: "https://logos-world.net/wp-content/uploads/2020/03/Intel-Logo.png"
-}, {
-  name: "Adobe",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.svg"
-}, {
-  name: "Spotify",
-  logo: "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png"
-}, {
-  name: "Uber",
-  logo: "https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
-}, {
-  name: "Airbnb",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Bélo.svg"
-}, {
-  name: "Twitter",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"
-}, {
-  name: "LinkedIn",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
-}, {
-  name: "Dropbox",
-  logo: "https://logos-world.net/wp-content/uploads/2020/03/Dropbox-Logo.png"
-}, {
-  name: "Slack",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg"
-}, {
-  name: "Zoom",
-  logo: "https://logos-world.net/wp-content/uploads/2020/12/Zoom-Logo.png"
-}];
+const trustPartners = [
+  {
+    name: "WHO",
+    fullName: "World Health Organization",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/c8/WHO_logo.svg",
+    category: "Healthcare",
+    partnership: "Official Healthcare Partner"
+  },
+  {
+    name: "UNICEF",
+    fullName: "United Nations Children's Fund",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/1d/UNICEF_Logo.svg",
+    category: "Children",
+    partnership: "Child Welfare Initiative"
+  },
+  {
+    name: "Red Cross",
+    fullName: "International Red Cross",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/International_Committee_of_the_Red_Cross_Logo.svg",
+    category: "Emergency",
+    partnership: "Emergency Relief Partner"
+  },
+  {
+    name: "Rotary",
+    fullName: "Rotary International",
+    logo: "https://upload.wikimedia.org/wikipedia/en/4/48/Rotary_International_logo.svg",
+    category: "Community",
+    partnership: "Community Development"
+  },
+  {
+    name: "Oxfam",
+    fullName: "Oxfam International",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/8/87/Oxfam-Logo.svg",
+    category: "Poverty",
+    partnership: "Poverty Alleviation"
+  },
+  {
+    name: "Save the Children",
+    fullName: "Save the Children Fund",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Save_the_Children_logo.svg",
+    category: "Children",
+    partnership: "Child Protection"
+  },
+  {
+    name: "Doctors Without Borders",
+    fullName: "Médecins Sans Frontières",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f3/MSF_logo.svg",
+    category: "Medical",
+    partnership: "Medical Outreach"
+  },
+  {
+    name: "Greenpeace",
+    fullName: "Greenpeace International",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Greenpeace_logo.svg",
+    category: "Environment",
+    partnership: "Environmental Protection"
+  }
+];
+
+const trustIndicators = [
+  {
+    icon: Shield,
+    title: "Bank-Level Security",
+    description: "256-bit SSL encryption protects all transactions",
+    color: "text-green-600",
+    bgColor: "bg-green-50"
+  },
+  {
+    icon: CheckCircle,
+    title: "Verified Platform",
+    description: "Certified by international NGO standards",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50"
+  },
+  {
+    icon: Award,
+    title: "Award Winning",
+    description: "Recognized for excellence in fundraising",
+    color: "text-purple-600",
+    bgColor: "bg-purple-50"
+  },
+  {
+    icon: Users,
+    title: "5.5M+ Users",
+    description: "Trusted by millions of donors worldwide",
+    color: "text-rose-600",
+    bgColor: "bg-rose-50"
+  }
+];
 
 const FeaturedIn = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(8);
+  const [currentPartner, setCurrentPartner] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
 
+  // Auto-rotate partners
   useEffect(() => {
-    const updateItemsPerView = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerView(2); // Mobile: 2 logos
-      } else if (window.innerWidth < 768) {
-        setItemsPerView(3); // Small tablet: 3 logos
-      } else if (window.innerWidth < 1024) {
-        setItemsPerView(4); // Tablet: 4 logos
-      } else if (window.innerWidth < 1280) {
-        setItemsPerView(6); // Desktop: 6 logos
-      } else {
-        setItemsPerView(8); // Large desktop: 8 logos
-      }
-    };
+    if (!autoPlay) return;
+    
+    const interval = setInterval(() => {
+      setCurrentPartner((prev) => (prev + 1) % trustPartners.length);
+    }, 4000);
 
-    updateItemsPerView();
-    window.addEventListener('resize', updateItemsPerView);
-    return () => window.removeEventListener('resize', updateItemsPerView);
-  }, []);
-
-  const maxIndex = Math.max(0, companyLogos.length - itemsPerView);
-
-  const nextSlide = () => {
-    setCurrentIndex(prev => Math.min(prev + 1, maxIndex));
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex(prev => Math.max(prev - 1, 0));
-  };
-
-  const visibleLogos = companyLogos.slice(currentIndex, currentIndex + itemsPerView);
+    return () => clearInterval(interval);
+  }, [autoPlay]);
 
   return (
-    <section className="py-8 sm:py-12 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            Trusted by Leading Companies
+    <section ref={ref} className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-10 right-20 w-32 h-32 bg-gradient-to-br from-rose-200 to-pink-200 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-20 w-40 h-40 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Enhanced Header */}
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm border border-rose-200 rounded-full px-6 py-3 shadow-lg mb-6">
+            <Heart className="w-4 h-4 text-rose-500" />
+            <span className="text-sm font-semibold text-rose-800">Trusted Partnerships</span>
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <span className="text-gray-900">Trusted by </span>
+            <span className="bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent">Global</span>
+            <span className="text-gray-900"> Organizations</span>
           </h2>
-          <p className="text-sm sm:text-base text-gray-600">Join thousands of companies who trust our platform</p>
-        </div>
+          
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Partnering with world-renowned organizations to create maximum impact for causes that matter
+          </p>
+        </motion.div>
 
-        {/* Logo Container */}
-        <div className="relative flex items-center justify-center">
-          {/* Left Arrow */}
-          <button 
-            onClick={prevSlide} 
-            disabled={currentIndex === 0} 
-            className="absolute left-0 sm:left-2 z-10 bg-white rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200 hover:border-rose-300 group"
-          >
-            <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-600 group-hover:text-rose-500 transition-colors" />
-          </button>
-
-          {/* Logos Container */}
-          <div className="overflow-hidden max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto">
-            <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 py-4">
-              {visibleLogos.map((company, index) => (
-                <div 
-                  key={currentIndex + index} 
-                  className="flex-shrink-0 flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                >
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 flex items-center justify-center">
-                    <img 
-                      src={company.logo} 
-                      alt={`${company.name} logo`} 
-                      className="w-full h-full object-contain transition-all duration-300" 
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.style.display = 'none';
-                        const fallback = target.nextElementSibling as HTMLElement;
-                        if (fallback) {
-                          fallback.style.display = 'flex';
-                        }
-                      }} 
-                    />
-                    <div className="w-full h-full bg-gradient-to-r from-gray-500 to-gray-600 rounded-lg hidden items-center justify-center">
-                      <span className="text-white font-bold text-lg sm:text-xl">
-                        {company.name.charAt(0)}
-                      </span>
-                    </div>
-                  </div>
+        {/* Trust Indicators */}
+        <motion.div 
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { 
+              opacity: 1,
+              transition: { 
+                delayChildren: 0.3, 
+                staggerChildren: 0.1 
+              } 
+            }
+          }}
+        >
+          {trustIndicators.map((indicator, index) => {
+            const Icon = indicator.icon;
+            return (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0 }
+                }}
+                className={`${indicator.bgColor} rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group`}
+              >
+                <div className={`w-12 h-12 ${indicator.color} bg-white rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className="h-6 w-6" />
                 </div>
-              ))}
+                <h3 className="font-bold text-gray-900 mb-2">{indicator.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{indicator.description}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Featured Partner Spotlight */}
+        <motion.div 
+          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-rose-100 mb-12"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          <div className="grid lg:grid-cols-2 gap-0">
+            {/* Partner Info */}
+            <div className="p-8 lg:p-12">
+              <div className="mb-6">
+                <div className="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  <Star className="w-3 h-3" />
+                  Featured Partner
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                  {trustPartners[currentPartner].fullName}
+                </h3>
+                <p className="text-rose-600 font-semibold mb-4">
+                  {trustPartners[currentPartner].partnership}
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Working together to create meaningful change in the {trustPartners[currentPartner].category.toLowerCase()} sector through innovative fundraising solutions and community engagement.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-600">Global Impact</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-gray-600">Verified Partner</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Partner Logo & Visual */}
+            <div className="bg-gradient-to-br from-rose-100 to-pink-100 p-8 lg:p-12 flex items-center justify-center relative">
+              <div className="w-32 h-32 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                <img 
+                  src={trustPartners[currentPartner].logo}
+                  alt={trustPartners[currentPartner].name}
+                  className="w-20 h-20 object-contain"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'w-20 h-20 bg-gradient-to-br from-rose-500 to-pink-600 rounded-lg flex items-center justify-center';
+                    fallback.innerHTML = `<span class="text-white font-bold text-2xl">${trustPartners[currentPartner].name.charAt(0)}</span>`;
+                    target.parentNode?.appendChild(fallback);
+                  }}
+                />
+              </div>
+              
+              {/* Category Badge */}
+              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-rose-200">
+                <span className="text-sm font-medium text-gray-700">{trustPartners[currentPartner].category}</span>
+              </div>
             </div>
           </div>
+        </motion.div>
 
-          {/* Right Arrow */}
-          <button 
-            onClick={nextSlide} 
-            disabled={currentIndex >= maxIndex} 
-            className="absolute right-0 sm:right-2 z-10 bg-white rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200 hover:border-rose-300 group"
+        {/* Partner Navigation */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <button
+            onClick={() => setAutoPlay(!autoPlay)}
+            className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-rose-200 hover:border-rose-300 transition-colors duration-300"
           >
-            <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-gray-600 group-hover:text-rose-500 transition-colors" />
+            {autoPlay ? (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-gray-700">Auto-rotating</span>
+              </div>
+            ) : (
+              <span className="text-sm font-medium text-gray-700">Paused</span>
+            )}
           </button>
-        </div>
 
-        {/* Pagination dots for mobile */}
-        <div className="flex justify-center mt-4 sm:hidden">
-          <div className="flex space-x-2">
-            {Array.from({ length: Math.ceil(companyLogos.length / itemsPerView) }).map((_, index) => (
+          <div className="flex items-center gap-2">
+            {trustPartners.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index * itemsPerView)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  Math.floor(currentIndex / itemsPerView) === index
-                    ? 'bg-rose-500'
-                    : 'bg-gray-300'
+                onClick={() => setCurrentPartner(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === currentPartner 
+                    ? 'bg-rose-500 w-8' 
+                    : 'bg-rose-200 w-2 hover:bg-rose-300'
                 }`}
               />
             ))}
           </div>
         </div>
+
+        {/* All Partners Grid */}
+        <motion.div 
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { 
+              opacity: 1,
+              transition: { 
+                delayChildren: 1, 
+                staggerChildren: 0.1 
+              } 
+            }
+          }}
+        >
+          {trustPartners.map((partner, index) => (
+            <motion.div
+              key={index}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              className={`bg-white/60 backdrop-blur-sm rounded-xl p-4 border transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer ${
+                index === currentPartner 
+                  ? 'border-rose-300 shadow-md' 
+                  : 'border-gray-200 hover:border-rose-200'
+              }`}
+              onClick={() => setCurrentPartner(index)}
+            >
+              <div className="flex items-center justify-center h-16">
+                <img 
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-w-full max-h-full object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-500 rounded-lg flex items-center justify-center';
+                    fallback.innerHTML = `<span class="text-white font-bold text-sm">${partner.name.charAt(0)}</span>`;
+                    target.parentNode?.appendChild(fallback);
+                  }}
+                />
+              </div>
+              <p className="text-xs text-center text-gray-600 mt-2 font-medium">{partner.name}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Call to Action */}
+        <motion.div 
+          className="text-center mt-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, delay: 1.5 }}
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-rose-100 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Ready to Join Our Network?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Partner with us to amplify your impact and reach millions of compassionate donors worldwide
+            </p>
+            <button className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+              <Zap className="inline mr-2 h-5 w-5" />
+              Become a Partner
+            </button>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

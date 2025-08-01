@@ -7,6 +7,62 @@
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {
+  /* Global overflow prevention */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Ensure all sections are properly contained */
+  section {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Specific fix for main content areas that might cause horizontal scroll */
+  .main-content {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Ensure all containers are properly constrained */
+  .max-w-7xl {
+    max-width: 80rem; /* Restore original max-width */
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .max-w-7xl {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .max-w-7xl {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  /* Additional overflow prevention for specific problematic areas */
+  .carousel, .carousel-content {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Ensure grid layouts don't overflow */
+  .grid-container {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

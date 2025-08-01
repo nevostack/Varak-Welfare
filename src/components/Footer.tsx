@@ -1,169 +1,369 @@
 
-import { Heart, Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail } from "lucide-react";
+import { 
+  Heart, 
+  Facebook, 
+  Twitter, 
+  Instagram, 
+  Linkedin, 
+  Youtube, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock,
+  Shield,
+  Award,
+  Users,
+  Globe,
+  ChevronRight,
+  ExternalLink
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 const Footer = () => {
   return (
-    <footer className="text-white" style={{ backgroundColor: "#111827" }}>
-      {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Company Info - Left Column */}
-          <div className="lg:col-span-1 space-y-6 text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start -space-x-2">
-              <img 
-                src="/lovable-uploads/6f963d4c-07e4-448f-9377-5fee8010d0fc.png" 
-                alt="Varak Logo" 
-                className="h-12 w-12 sm:h-16 sm:w-16"
-              />
-              <span className="text-xl sm:text-2xl font-bold">Varak</span>
-            </div>
-            
-            {/* Social Media Icons */}
-            <div className="flex space-x-4 justify-center sm:justify-start">
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                <Facebook className="h-5 w-5 sm:h-6 sm:w-6" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                <Twitter className="h-5 w-5 sm:h-6 sm:w-6" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                <Linkedin className="h-5 w-5 sm:h-6 sm:w-6" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                <Youtube className="h-5 w-5 sm:h-6 sm:w-6" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                <Instagram className="h-5 w-5 sm:h-6 sm:w-6" />
-              </a>
-            </div>
-
-            {/* Followers Count */}
-            <div className="text-center sm:text-left">
-              <div className="text-xl sm:text-2xl font-bold text-white">2.5M +</div>
-              <div className="text-gray-300 text-sm">Followers</div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="space-y-4 text-center sm:text-left">
-              <div>
-                <div className="text-white font-semibold mb-2">For any queries</div>
-                <div className="flex items-center justify-center sm:justify-start space-x-2 text-sm">
-                  <Mail className="h-4 w-4" />
-                  <span>Email: info@varak.org</span>
-                </div>
-                <div className="flex items-center justify-center sm:justify-start space-x-2 text-sm mt-1">
-                  <Phone className="h-4 w-4" />
-                  <span>Contact No: +91 9930088522</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="text-white font-semibold mb-2">For any Media & PR queries</div>
-                <div className="flex items-center justify-center sm:justify-start space-x-2 text-sm">
-                  <Mail className="h-4 w-4" />
-                  <span>Email: pr@varak.org</span>
-                </div>
-                <div className="flex items-center justify-center sm:justify-start space-x-2 text-sm mt-1">
-                  <Phone className="h-4 w-4" />
-                  <span>Contact No: +91 9930088551</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Causes */}
-          <div className="text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-6 text-white">Causes</h3>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Medical crowdfunding</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Cancer Crowdfunding</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Transplant Crowdfunding</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Education Crowdfunding</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Sports Crowdfunding</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Child Welfare</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Animal Fundraisers</a></li>
-            </ul>
-          </div>
-
-          {/* How it works? */}
-          <div className="text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-6 text-white">How it works?</h3>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Fundraising for NGOs</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Sponsor A Child</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Fundraising Tips</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">What is Crowdfunding?</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Corporates</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Withdraw Funds</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Browse Fundraiser</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Find Hospitals</a></li>
-            </ul>
-          </div>
-
-          {/* About Us */}
-          <div className="text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-6 text-white">About Us</h3>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Team Varak</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">In The News</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Web Stories</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Careers</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Varak Blog</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Success Stories</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Is Varak Genuine?</a></li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div className="text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-6 text-white">Support</h3>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Medical Finance</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">FAQs & Help Center</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Are Varak Campaigns Genuine?</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Fundraiser Video</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Trust & Safety</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Plans & Pricing*</a></li>
-              <li><a href="#" className="text-gray-200 hover:text-white transition-colors text-sm">Contact Us</a></li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Payment Methods */}
-        <div className="mt-12 pt-8">
-          <div className="flex flex-wrap items-center justify-center lg:justify-end gap-2 sm:gap-3">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-6 sm:h-8 bg-white px-2 py-1 rounded" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1200px-Mastercard-logo.svg.png" alt="MasterCard" className="h-6 sm:h-8 bg-white px-2 py-1 rounded" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/American_Express_logo.svg/1200px-American_Express_logo.svg.png" alt="American Express" className="h-5 sm:h-7 bg-white px-2 py-1 rounded" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/1200px-UPI-Logo-vector.svg.png" alt="UPI" className="h-6 sm:h-8 bg-white px-2 py-1 rounded" />
-            <div className="bg-white px-2 sm:px-3 py-1 sm:py-2 rounded">
-              <span className="text-blue-600 font-bold text-xs sm:text-sm">NET BANKING</span>
-            </div>
-            <div className="bg-orange-500 px-2 sm:px-3 py-1 sm:py-2 rounded flex items-center">
-              <span className="text-white font-bold text-xs sm:text-sm">🔒 100% Secure</span>
-            </div>
-          </div>
-        </div>
+    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-rose-500 to-pink-600 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Bottom Footer */}
-      <div className="border-t border-gray-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center space-y-3">
-            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-300">
-              <span className="block sm:inline">Copyright © 2025 Varak Online Ventures Pvt Ltd. All Rights Reserved.</span>
-              <a href="#" className="hover:text-white transition-colors">Terms of Use</a>
-              <span className="hidden sm:inline">|</span>
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <span className="hidden sm:inline">|</span>
-              <a href="#" className="hover:text-white transition-colors">AML Policy</a>
-              <span className="hidden sm:inline">|</span>
-              <a href="#" className="hover:text-white transition-colors">Use of cookies</a>
+      {/* Main Footer */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-12">
+          {/* Company Info - Enhanced */}
+          <div className="lg:col-span-2 space-y-8">
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              {/* Logo and Brand */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Heart className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent">
+                    Varak
+                  </span>
+                </div>
+                <p className="text-gray-300 leading-relaxed">
+                  Empowering communities through compassionate crowdfunding. Together, we transform lives and create lasting change across India.
+                </p>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                  <div className="text-2xl font-bold text-rose-400">5.5M+</div>
+                  <div className="text-gray-400 text-sm">Trusted Users</div>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                  <div className="text-2xl font-bold text-rose-400">₹100Cr+</div>
+                  <div className="text-gray-400 text-sm">Funds Raised</div>
+                </div>
+              </div>
+
+              {/* Social Media */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-white">Connect With Us</h4>
+                <div className="flex space-x-3">
+                  {[
+                    { icon: Facebook, href: "#", label: "Facebook" },
+                    { icon: Twitter, href: "#", label: "Twitter" },
+                    { icon: Instagram, href: "#", label: "Instagram" },
+                    { icon: Linkedin, href: "#", label: "LinkedIn" },
+                    { icon: Youtube, href: "#", label: "YouTube" }
+                  ].map(({ icon: Icon, href, label }) => (
+                    <a 
+                      key={label}
+                      href={href} 
+                      className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-rose-500 transition-all duration-300 group border border-white/20"
+                      aria-label={label}
+                    >
+                      <Icon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Quick Links */}
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+              <Heart className="h-4 w-4 text-rose-400" />
+              Causes We Support
+            </h3>
+            <ul className="space-y-3">
+              {[
+                "Medical Treatment",
+                "Cancer Care",
+                "Heart Surgery", 
+                "Child Education",
+                "Emergency Relief",
+                "Elderly Care",
+                "Disaster Recovery"
+              ].map((item) => (
+                <li key={item}>
+                  <a href="#" className="text-gray-300 hover:text-rose-400 transition-colors text-sm flex items-center gap-2 group">
+                    <ChevronRight className="h-3 w-3 text-gray-500 group-hover:text-rose-400 transition-colors" />
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* How It Works */}
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+              <Users className="h-4 w-4 text-rose-400" />
+              Platform
+            </h3>
+            <ul className="space-y-3">
+              {[
+                "Start a Fundraiser",
+                "Browse Campaigns",
+                "Success Stories",
+                "Fundraising Tips",
+                "How It Works",
+                "Withdraw Funds",
+                "Corporate Partners"
+              ].map((item) => (
+                <li key={item}>
+                  <a href="#" className="text-gray-300 hover:text-rose-400 transition-colors text-sm flex items-center gap-2 group">
+                    <ChevronRight className="h-3 w-3 text-gray-500 group-hover:text-rose-400 transition-colors" />
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* About & Support */}
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+              <Shield className="h-4 w-4 text-rose-400" />
+              Support & Trust
+            </h3>
+            <ul className="space-y-3">
+              {[
+                "Help Center",
+                "Trust & Safety",
+                "Contact Support",
+                                    "About Varak",
+                "Team & Careers",
+                "Media Coverage",
+                "Blog & Resources"
+              ].map((item) => (
+                <li key={item}>
+                  <a href="#" className="text-gray-300 hover:text-rose-400 transition-colors text-sm flex items-center gap-2 group">
+                    <ChevronRight className="h-3 w-3 text-gray-500 group-hover:text-rose-400 transition-colors" />
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Compact Contact */}
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+              <Globe className="h-4 w-4 text-rose-400" />
+              Contact Us
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Main Contact */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <Mail className="h-4 w-4 text-rose-400 flex-shrink-0" />
+                  <div>
+                    <div className="text-white font-medium">hello@varak.org</div>
+                    <div className="text-gray-400 text-xs">General Inquiries</div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 text-sm">
+                  <Phone className="h-4 w-4 text-rose-400 flex-shrink-0" />
+                  <div>
+                    <div className="text-white font-medium">+91 9876543210</div>
+                    <div className="text-gray-400 text-xs">24/7 Support Available</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 text-sm">
+                  <MapPin className="h-4 w-4 text-rose-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-white font-medium">Mumbai, India</div>
+                    <div className="text-gray-400 text-xs">Serving Pan-India</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="pt-4 border-t border-white/10">
+                <div className="space-y-2">
+                  <a href="#" className="flex items-center gap-2 text-sm text-gray-300 hover:text-rose-400 transition-colors">
+                    <ExternalLink className="h-3 w-3" />
+                    Press Inquiries
+                  </a>
+                  <a href="#" className="flex items-center gap-2 text-sm text-gray-300 hover:text-rose-400 transition-colors">
+                    <ExternalLink className="h-3 w-3" />
+                    Help Center
+                  </a>
+                  <a href="#" className="flex items-center gap-2 text-sm text-gray-300 hover:text-rose-400 transition-colors">
+                    <ExternalLink className="h-3 w-3" />
+                    Report Issue
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="text-xs sm:text-sm text-gray-300 max-w-4xl mx-auto px-4">
-              Varak is a private limited company operating an online intermediary platform providing crowdfunding services for medical, social and charitable causes. We facilitate transactions between contributors and campaigners. Varak does not provide any financial benefits in any form whatsoever to any person making contributions on its platform.
+          </motion.div>
+        </div>
+
+        {/* Enhanced Payment Methods Section */}
+        <motion.div 
+          className="mt-16 pt-8 border-t border-white/10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <div className="text-center mb-8">
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center justify-center gap-2">
+              <Shield className="h-5 w-5 text-rose-400" />
+              Secure Payment Methods
+            </h3>
+            <p className="text-gray-400 text-sm">
+              Your donations are protected with bank-level security and 256-bit SSL encryption
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+            {/* Payment Logos */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-6 w-16 object-contain" />
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1200px-Mastercard-logo.svg.png" alt="MasterCard" className="h-6 w-16 object-contain" />
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/1200px-UPI-Logo-vector.svg.png" alt="UPI" className="h-6 w-16 object-contain" />
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <span className="text-blue-300 font-bold text-sm">NET BANKING</span>
+            </div>
+            <div className="bg-gradient-to-r from-rose-500 to-pink-600 rounded-lg px-4 py-3 border border-rose-400 hover:from-rose-600 hover:to-pink-700 transition-all duration-300">
+              <span className="text-white font-bold text-sm flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                100% Secure
+              </span>
             </div>
           </div>
+
+          {/* Security Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/10">
+              <Shield className="h-4 w-4 text-green-400" />
+              <span className="text-sm text-gray-300">SSL Secured</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/10">
+              <Award className="h-4 w-4 text-blue-400" />
+              <span className="text-sm text-gray-300">PCI Compliant</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/10">
+              <Users className="h-4 w-4 text-purple-400" />
+              <span className="text-sm text-gray-300">Trusted by 5.5M+</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Enhanced Bottom Footer */}
+      <div className="border-t border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            {/* Legal Links */}
+            <div className="flex flex-wrap justify-center items-center gap-3 text-sm">
+              {[
+                "Terms of Service",
+                "Privacy Policy", 
+                "Cookie Policy",
+                "Refund Policy",
+                "Anti-Money Laundering"
+              ].map((link, index) => (
+                <div key={link} className="flex items-center gap-3">
+                  {index > 0 && <span className="w-1 h-1 bg-gray-500 rounded-full"></span>}
+                  <a href="#" className="text-gray-400 hover:text-rose-400 transition-colors">
+                    {link}
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            {/* Copyright */}
+            <div className="text-center">
+              <p className="text-gray-400 text-sm mb-2">
+                Copyright © 2025 <span className="text-rose-400 font-semibold">Varak</span> Online Ventures Pvt Ltd. All Rights Reserved.
+              </p>
+              <p className="text-xs text-gray-500 max-w-4xl mx-auto leading-relaxed">
+                Varak is a registered online crowdfunding platform facilitating secure donations for medical, educational, and social causes. 
+                We connect generous donors with verified campaigns to create meaningful impact across India. 
+                All transactions are secured and monitored for transparency and donor protection.
+              </p>
+            </div>
+
+            {/* Final CTA */}
+            <div className="text-center pt-6 border-t border-white/5">
+              {/* <p className="text-gray-400 text-sm mb-4">
+                Made with <Heart className="inline h-4 w-4 text-rose-400 mx-1" /> to transform lives through compassionate giving
+              </p> */}
+              <div className="flex justify-center gap-4">
+                <a 
+                  href="#" 
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-all duration-300 transform hover:scale-105"
+                >
+                  <Heart className="h-4 w-4" />
+                  Start Fundraising
+                </a>
+                <a 
+                  href="#" 
+                  className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 px-6 py-2 rounded-lg font-semibold text-sm transition-all duration-300"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Browse Campaigns
+                </a>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </footer>
