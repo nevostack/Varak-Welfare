@@ -24,6 +24,7 @@ import FundraiserCreationModal from "@/components/FundraiserCreationModal";
 import UserProfile from "@/components/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 
 const Header = () => {
@@ -59,6 +60,8 @@ const Header = () => {
           <div className="flex justify-between items-center h-20 sm:h-24">
             {/* Enhanced Logo */}
             <div className="flex items-center gap-3 group cursor-pointer">
+              <Link to ="/" className="flex items-center space-x-2">
+             
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
                 <div className="relative bg-white p-1 rounded-2xl shadow-lg border-2 border-rose-200 group-hover:border-rose-300 transition-all duration-300">
@@ -78,6 +81,7 @@ const Header = () => {
                   India's #1 Crowdfunding Platform
                 </span>
               </div>
+               </Link>
             </div>
 
             {/* Enhanced Desktop Navigation */}
@@ -158,6 +162,7 @@ const Header = () => {
                     Start Fundraiser
                   </Button>
                   <UserProfile user={user} onSignOut={handleSignOut} />
+                  
                 </>
               ) : (
                 <>

@@ -55,6 +55,7 @@ const formSchema = z.object({
 })
 
 export function ProfileForm() {
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -192,6 +193,7 @@ export function ProfileForm() {
             </FormItem>
           )}
         />
+        <h1 className="text-2xl font-bold mb-6">Other Details</h1>
        <FormField
           control={form.control}
           name="education"
@@ -248,11 +250,14 @@ export function ProfileForm() {
                   className="resize-none"
                   {...field}
                 />
+
               </FormControl>
               <FormMessage />
+              
             </FormItem>
           )}
         />
+        <p className="mt-4 text-sm">Update Password <span className="text-blue-500 text-sm" ><a href="">Reset</a></span></p>
         <Button type="submit">Submit</Button>
       </form>
     </Form>

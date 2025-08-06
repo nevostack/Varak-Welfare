@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { User, Settings, Heart, LogOut, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link, redirect } from 'react-router-dom';
 
 interface UserProfileProps {
   user: {
@@ -32,12 +33,8 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
       description: "You have been logged out of your account.",
     });
   };
-
-  const handleProfileClick = () => {
-    toast({
-      title: "Profile",
-      description: "Profile page coming soon!",
-    });
+  const handleMyProfileClick = () => {
+    redirect('/profile');
   };
 
   const handleMyFundraisersClick = () => {
@@ -97,11 +94,11 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
         
         {/* Profile Actions */}
         <DropdownMenuItem 
-          onClick={handleProfileClick}
+
           className="hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer rounded-md px-3 py-2 flex items-center gap-3"
         >
           <User className="h-4 w-4" />
-          <span>My Profile</span>
+          <span><Link to="/profile">My Profile</Link></span>
         </DropdownMenuItem>
         
         <DropdownMenuItem 
