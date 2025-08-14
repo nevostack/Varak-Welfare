@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { X, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { authApi, validators, ApiError } from "@/lib/api";
 import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 import MobileVerificationModal from "@/components/MobileVerificationModal";
 import EmailVerificationModal from "@/components/EmailVerificationModal";
+import { signIn } from "@/api/auth"; // Add this import
 
 interface SignInModalProps {
   open: boolean;
@@ -26,29 +28,25 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
   const [isLoading, setIsLoading] = useState(false);
   const [countryCode, setCountryCode] = useState('+91');
   const { toast } = useToast();
-  const { signIn } = useAuth();
+  const { signIn: authSignIn } = useAuth();
 
   // Function to detect if input is mobile number
   const isMobileNumber = (input: string) => {
-    const mobileRegex = /^\d{10}$/;
-    return mobileRegex.test(input.replace(/\s+/g, ''));
+    return validators.isMobile(input);
   };
 
   // Function to detect if input is email
   const isEmail = (input: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(input);
+    return validators.isEmail(input);
   };
 
-  // Function to simulate successful login
-  const handleSuccessfulLogin = (userIdentifier: string) => {
-    const userData = {
-      name: userIdentifier.includes('@') ? 'John Doe' : 'राहुल शर्मा',
-      email: userIdentifier.includes('@') ? userIdentifier : `${userIdentifier}@example.com`,
-      avatar: undefined
-    };
-    
-    signIn(userData);
+  // Function to handle successful login
+  const handleSuccessfulLogin = (userData: any) => {
+    authSignIn({
+      name: userData.name,
+      email: userData.email,
+      avatar: userData.avatar
+    });
     onOpenChange(false);
     resetForm();
     
@@ -57,6 +55,12 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
       description: `Welcome to Varak! You're now signed in as ${userData.name}`,
     });
   };
+
+  // const resetForm = () => {
+  //   setEmailOrMobile('');
+  //   setPassword('');
+  //   setShowPasswordLogin(false);
+  // };
 
   const handleGetOTP = async () => {
     if (!emailOrMobile.trim()) {
@@ -81,30 +85,43 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
 
     setIsLoading(true);
     
-    // Simulate API call delay
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await authApi.requestOTP(cleanInput);
+      
+      onOpenChange(false);
       
       if (isMobileNumber(cleanInput)) {
-        // Mobile number - open mobile verification modal
-        console.log('OTP requested for mobile:', cleanInput);
-        onOpenChange(false);
         setIsMobileVerificationOpen(true);
         toast({
           title: "OTP Sent",
           description: `Verification code sent to ${countryCode} ${cleanInput}`,
         });
       } else {
-        // Email - open email verification modal
-        console.log('OTP requested for email:', cleanInput);
-        onOpenChange(false);
         setIsEmailVerificationOpen(true);
         toast({
           title: "OTP Sent",
           description: `Verification code sent to ${cleanInput}. Please check your email.`,
         });
       }
-    }, 1500);
+    } catch (error) {
+      console.error('OTP request error:', error);
+      
+      if (error instanceof ApiError) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send OTP. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePasswordLogin = async () => {
@@ -116,45 +133,23 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
       });
       return;
     }
-
-    const cleanInput = emailOrMobile.trim();
-    
-    if (!isEmail(cleanInput) && !isMobileNumber(cleanInput)) {
+    setIsLoading(true);
+    try {
+      const res = await signIn(emailOrMobile, password);
+      handleSuccessfulLogin(res.data.user.email); // Or use returned user data
       toast({
-        title: "Invalid Input",
-        description: "Please enter a valid email address or mobile number",
+        title: "Login Successful",
+        description: `Welcome, ${res.data.user.name}`,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Login Failed",
+        description: err.response?.data?.message || "Invalid credentials",
         variant: "destructive",
       });
-      return;
-    }
-
-    setIsLoading(true);
-    
-    // Simulate login validation
-    setTimeout(() => {
+    } finally {
       setIsLoading(false);
-      
-      // Demo credentials for testing
-      const validCredentials = [
-        { user: 'demo@example.com', pass: 'password123' },
-        { user: '9876543210', pass: 'mobile123' }
-      ];
-      
-      const isValidLogin = validCredentials.some(
-        cred => cred.user === cleanInput && cred.pass === password
-      );
-      
-      if (isValidLogin) {
-        console.log('Password login successful for:', cleanInput);
-        handleSuccessfulLogin(cleanInput);
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid credentials. Try demo@example.com / password123 or 9876543210 / mobile123",
-          variant: "destructive",
-        });
-      }
-    }, 1500);
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -276,7 +271,7 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
                     {/* Country Code Selector (shown only when typing mobile) */}
                     {isMobileNumber(emailOrMobile) && (
                       <select
-                        value={countryCode}
+                        title={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
                         className="w-16 sm:w-20 px-1 sm:px-2 py-2 border border-gray-300 rounded-md focus:border-rose-500 focus:ring-rose-500 text-sm"
                       >
