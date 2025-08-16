@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { CreateUserInput, UpdateUserInput, LoginInput } from "../types";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv"
+import otpStore from "../lib/otpStore";
 
 dotenv.config();
 
@@ -193,55 +194,84 @@ export const updateUser = async (req: Request, res: Response) => {
 
 
 // Login User
-export const login = async (req:Request, res: Response) => {
-    const userInput: LoginInput = req.body
+export const login = async (req: Request, res: Response) => {
+    const { user_email, user_mobile, user_password, otp } = req.body;
 
     try {
-
+        // Find user by email or mobile
         const user = await db.user.findFirst({
             where: {
                 OR: [
-                    {user_email: userInput.user_email},
-                    {user_mobile: userInput.user_mobile}
+                    { user_email },
+                    { user_mobile }
                 ]
             }
-        })
-    
-        if(!user) {
+        });
+
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "Invalid Credentials"
-            })
+            });
         }
-    
-        const isMatch = await bcrypt.compare(userInput.user_password, user.user_password)
-        if(!isMatch) {
-            return res.status(401).json({
+
+        // If password is provided, check password
+        if (user_password) {
+            const isMatch = await bcrypt.compare(user_password, user.user_password);
+            if (!isMatch) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid Password"
+                });
+            }
+        }
+        // If OTP is provided, check OTP from otpStore
+        else if (otp) {
+            const identifier = user_email || user_mobile;
+            if (!identifier || otpStore[identifier] !== otp) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid OTP"
+                });
+            }
+            // OTP is valid, remove it from store
+            delete otpStore[identifier];
+        }
+        // If neither password nor OTP, reject
+        else {
+            return res.status(400).json({
                 success: false,
-                message: "Invalid Password"
-            })
+                message: "Password or OTP required"
+            });
         }
-    
-        const secret = process.env.JWT_SECRET
+
+        // Generate JWT
+        const secret = process.env.JWT_SECRET;
         if (!secret) {
             throw new Error("JWT_SECRET is not defined in environment variables");
         }
-    
+
         const token = jwt.sign(
-            {userId: user.user_id, email: user.user_email, phone: user.user_mobile},
+            { userId: user.user_id, email: user.user_email, phone: user.user_mobile },
             secret,
-        )
-    
+        );
+
         res.status(200).json({
             success: true,
             message: "Login Successful",
-            jwt: token
-        })
+            jwt: token,
+            user: {
+                user_id: user.user_id,
+                user_name: user.user_name,
+                user_email: user.user_email,
+                user_mobile: user.user_mobile,
+            }
+        });
     } catch (error: any) {
         res.status(500).json({
             success: false,
             message: "Cannot Login User"
-        })
+        });
     }
 }
 
@@ -268,3 +298,18 @@ export const logout = async(req: Request, res: Response)=>{
     }
 }
 
+export const requestOTP = async (emailOrMobile: string) => {
+  return fetch('/user/request-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ emailOrMobile }),
+  }).then(res => res.json());
+};
+
+export const verifyOTP = async (emailOrMobile: string, otp: string) => {
+  return fetch('/user/verify-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ emailOrMobile, otp }),
+  }).then(res => res.json());
+};

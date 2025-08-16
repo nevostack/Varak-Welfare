@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,15 +8,15 @@ import { useToast } from "@/hooks/use-toast";
 interface EmailVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  email: string;
-  onVerificationComplete: () => void;
+  user_email: string;
+  onVerificationComplete: (otp: string) => void;
   onBack: () => void;
 }
 
 const EmailVerificationModal = ({
   open,
   onOpenChange,
-  email,
+  user_email,
   onVerificationComplete,
   onBack
 }: EmailVerificationModalProps) => {
@@ -58,15 +57,18 @@ const EmailVerificationModal = ({
     }
 
     setIsVerifying(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsVerifying(false);
-      
-      // Demo OTP for testing
-      if (otp === '123456') {
-        console.log('Email OTP verification successful for:', email);
-        onVerificationComplete();
+
+    try {
+      // Call backend to verify OTP 
+      const res = await fetch('http://localhost:3000/api/user/verify-otp', {  
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email, otp }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        onVerificationComplete(otp);
         toast({
           title: "Verification Successful",
           description: "Email verified successfully!",
@@ -74,35 +76,46 @@ const EmailVerificationModal = ({
       } else {
         toast({
           title: "Invalid OTP",
-          description: "Please enter the correct OTP sent to your email",
+          description: data.message || "Please enter the correct OTP sent to your email",
           variant: "destructive",
         });
         setOtp('');
       }
-    }, 1500);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Verification failed. Please try again.",
+        variant: "destructive",
+      });
+      setOtp('');
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const handleResendOTP = async () => {
     setIsResending(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await fetch('http://localhost:3000/api/user/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email }),
+      });
       setIsResending(false);
       setTimeLeft(60);
       setCanResend(false);
       toast({
         title: "OTP Resent",
-        description: `New verification code sent to ${email}`,
+        description: `New verification code sent to ${user_email}`,
       });
-      
-      // Show demo OTP for testing
-      setTimeout(() => {
-        toast({
-          title: "Demo OTP",
-          description: "For demo: Your new OTP is 123456",
-        });
-      }, 2000);
-    }, 1500);
+    } catch (err) {
+      setIsResending(false);
+      toast({
+        title: "Error",
+        description: "Failed to resend OTP. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBackToLogin = () => {
@@ -135,7 +148,7 @@ const EmailVerificationModal = ({
           </DialogTitle>
           <DialogDescription className="text-gray-600 text-xs sm:text-sm px-2">
             We've sent a 6-digit code to<br />
-            <span className="font-medium text-gray-900">{email}</span>
+            <span className="font-medium text-gray-900">{user_email}</span>
           </DialogDescription>
         </DialogHeader>
 

@@ -161,8 +161,8 @@ const Header = () => {
                   >
                     Start Fundraiser
                   </Button>
-                  <UserProfile user={user} onSignOut={handleSignOut} />
-                  
+                  <UserProfile user={user.user} onSignOut={handleSignOut} />
+
                 </>
               ) : (
                 <>
@@ -238,11 +238,11 @@ const Header = () => {
                     <>
                       <div className="flex items-center gap-3 p-3 bg-rose-50 rounded-lg">
                         <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-pink-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
-                          {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                          {user.user?.user_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                          <p className="text-xs text-gray-500">{user.email}</p>
+                          <p className="text-sm font-medium text-gray-900">{user.user?.user_name}</p>
+                          <p className="text-xs text-gray-500">{user.user?.user_email}</p>
                         </div>
                       </div>
                       <Button 

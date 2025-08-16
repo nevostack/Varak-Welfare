@@ -105,6 +105,7 @@ Thank you.`;
             <Upload className="h-4 w-4 text-rose-500 mx-auto mb-1" />
             <p className="text-xs text-gray-600 mb-2">Upload documents</p>
             <input
+              title="Image"
               ref={fileInputRef}
               type="file"
               multiple

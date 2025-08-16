@@ -15,11 +15,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Link, redirect } from 'react-router-dom';
 
 interface UserProfileProps {
-  user: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
+  user?: {
+    user_id?: string
+    user_name?: string
+    user_email?: string
+    user_mobile?: string
+  }
+  // avatar?: string
   onSignOut: () => void;
 }
 
@@ -59,13 +61,15 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
   };
 
   // Get user initials for avatar fallback
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const getInitials = (user_name?: string) => {
+    return user_name
+      ? user_name
+          .split(' ')
+          .map(word => word[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2)
+      : '';
   };
 
   return (
@@ -73,9 +77,9 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-rose-50">
           <Avatar className="h-10 w-10 border-2 border-rose-200">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={''} alt={user?.user_name} />
             <AvatarFallback className="bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium">
-              {getInitials(user.name)}
+              {getInitials(user?.user_name)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -85,8 +89,8 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
         {/* User Info */}
         <DropdownMenuLabel className="px-3 py-2">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium text-gray-900">{user.name}</p>
-            <p className="text-xs text-gray-500">{user.email}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.user_name}</p>
+            <p className="text-xs text-gray-500">{user?.user_email}</p>
           </div>
         </DropdownMenuLabel>
         

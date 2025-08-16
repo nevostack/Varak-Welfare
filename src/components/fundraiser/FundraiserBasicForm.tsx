@@ -287,7 +287,7 @@ const FundraiserBasicForm = ({
                 </div>
                 <div className="text-xs text-gray-500">Image uploaded</div>
               </div>
-              <button type="button" onClick={() => {
+              <button title="Image" type="button" onClick={() => {
             setSelectedImage(null);
             setImagePreview(null);
             onInputChange('fundraiserImage', '');

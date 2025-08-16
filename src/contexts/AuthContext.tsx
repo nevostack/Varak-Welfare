@@ -1,17 +1,19 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { authApi } from '@/lib/api';
+import { signUp } from '@/api/auth';
 
 interface User {
-  id?: string;
-  name: string;
-  email: string;
-  mobile?: string;
-  countryCode?: string;
-  isEmailVerified?: boolean;
-  isMobileVerified?: boolean;
-  avatar?: string;
-  role?: string;
+  success?: boolean
+  message?: string
+  token?: string
+  user?: {
+    user_id?: string
+    user_name?: string
+    user_email?: string
+    user_mobile?: string
+  }
+  avatar?: string
 }
 
 interface AuthContextType {
@@ -43,8 +45,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signIn = (userData: User) => {
     setUser(userData);
-    // Store in localStorage for persistence (user data without token)
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', JSON.stringify(userData.token))
+    // localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const signOut = () => {
@@ -57,51 +59,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user) {
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      // localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 
   // Check for existing user on component mount
   React.useEffect(() => {
     const initializeAuth = async () => {
-      const storedUser = localStorage.getItem('user');
-      const token = localStorage.getItem('authToken');
+      // const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
       
-      if (storedUser && token) {
+      if (token) {
         try {
-          const userData = JSON.parse(storedUser);
-          
-          // Validate token by trying to fetch user profile
           try {
             // Try to fetch fresh user data from API
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/user/profile`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/user/profile`, {
               headers: {
                 'Authorization': `Bearer ${token}`
               }
             });
             
-            if (response.ok) {
-              const result = await response.json();
-              if (result.success && result.data?.user) {
-                // Use fresh data from API
-                setUser(result.data.user);
-                localStorage.setItem('user', JSON.stringify(result.data.user));
-              } else {
-                // Fallback to stored user data
-                setUser(userData);
-              }
+            const result = await response.json();
+            if (result.status) {
+              setUser(result.data);
             } else {
               // Token might be invalid, but keep stored user data
-              setUser(userData);
+              setUser(null);
             }
           } catch (error) {
             console.log('Could not fetch fresh user data, using stored data');
-            setUser(userData);
+            setUser(null);
           }
         } catch (error) {
           console.error('Error parsing stored user data:', error);
-          localStorage.removeItem('user');
-          localStorage.removeItem('authToken');
+          localStorage.removeItem('token');
         }
       }
       setIsLoading(false);
@@ -117,6 +108,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signIn,
     signOut,
     updateUser,
+    signUp
   };
 
   return (

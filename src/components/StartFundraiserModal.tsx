@@ -9,6 +9,8 @@ import { Eye, EyeOff, User, Mail, Lock, Phone, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import MobileVerificationModal from "@/components/MobileVerificationModal";
+import EmailVerificationModal from './EmailVerificationModal';
+import { signUp } from '@/api/auth';
 
 interface StartFundraiserModalProps {
   open: boolean;
@@ -86,6 +88,7 @@ const StartFundraiserModal = ({
   const [showPassword, setShowPassword] = useState(false);
   const [countryCode, setCountryCode] = useState('+1');
   const [showMobileVerification, setShowMobileVerification] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { signIn } = useAuth();
@@ -146,7 +149,7 @@ const StartFundraiserModal = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast({
         title: "Please fix the errors",
@@ -157,16 +160,30 @@ const StartFundraiserModal = ({
     }
 
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    // Send OTP to email
+    try {
+      await fetch('http://localhost:3000/api/user/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email: formData.email }),
+      });
+
       setIsSubmitting(false);
-      setShowMobileVerification(true);
+      // Show email verification modal here
+      setShowEmailVerification(true);
       toast({
         title: "OTP Sent",
-        description: `Verification code sent to ${countryCode} ${formData.mobile}`
+        description: `Verification code sent to ${formData.email}`
       });
-    }, 1500);
+    } catch (err) {
+      setIsSubmitting(false);
+      toast({
+        title: "Error",
+        description: "Failed to send OTP. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -187,11 +204,13 @@ const StartFundraiserModal = ({
   const handleVerificationComplete = () => {
     // Sign in the user with the registration data
     const userData = {
-      name: formData.name,
-      email: formData.email,
-      avatar: undefined
+      user_name: formData.name,
+      user_email: formData.email,
+      user_password: formData.password,
+      user_mobile: formData.mobile
     };
     
+    signUp(userData);
     signIn(userData);
     setShowMobileVerification(false);
     onOpenChange(false);
@@ -229,7 +248,7 @@ const StartFundraiserModal = ({
 
   return (
     <>
-      <Dialog open={open && !showMobileVerification} onOpenChange={onOpenChange}>
+      <Dialog open={open && !showMobileVerification && !showEmailVerification} onOpenChange={onOpenChange}>
         <DialogContent className="w-[95vw] max-w-md mx-auto my-4 rounded-2xl border-0 shadow-2xl bg-white max-h-[90vh] overflow-hidden p-0" hideCloseButton>
           <div className="gradient-header-fix"></div>
           <div className="bg-gradient-to-r from-rose-500 to-pink-600 p-6 rounded-gradient-header relative">
@@ -272,7 +291,6 @@ const StartFundraiserModal = ({
                 </div>
                 {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
               </div>
-
               {/* Email Field */}
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-sm font-medium text-gray-700 block">
@@ -395,12 +413,11 @@ const StartFundraiserModal = ({
         </DialogContent>
       </Dialog>
 
-      {/* Mobile Verification Modal */}
-      <MobileVerificationModal
-        open={showMobileVerification}
-        onOpenChange={setShowMobileVerification}
-        mobileNumber={formData.mobile}
-        countryCode={countryCode}
+      {/* Email Verification Modal */}
+      <EmailVerificationModal
+        open={showEmailVerification}
+        onOpenChange={setShowEmailVerification}
+        user_email={formData.email}
         onVerificationComplete={handleVerificationComplete}
         onBack={handleBackToForm}
       />

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 // Types
 interface ApiResponse<T = any> {
@@ -26,12 +26,11 @@ interface AuthResponse {
 }
 
 interface SignupData {
-  name: string;
-  email: string;
-  mobile: string;
+  user_name: string;
+  user_email: string;
+  user_mobile: string;
   countryCode?: string;
-  password: string;
-  confirmPassword: string;
+  user_password: string;
 }
 
 interface SigninData {
@@ -112,7 +111,7 @@ const makeApiRequest = async (endpoint: string, options: RequestOptions = {}): P
 export const authApi = {
   // Sign up new user
   signup: async (userData: SignupData): Promise<ApiResponse<AuthResponse>> => {
-    const response = await makeApiRequest('/auth/signup', {
+    const response = await makeApiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -126,41 +125,37 @@ export const authApi = {
   },
 
   // Sign in user
-  signin: async (credentials: SigninData): Promise<ApiResponse<AuthResponse>> => {
-    const response = await makeApiRequest('/auth/signin', {
+  signin: async (credentials: { user_email?: string; user_mobile?: string; user_password?: string; otp?: string }) => {
+    const response = await makeApiRequest('/user/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
-    
-    // Store token if signin successful
-    if (response.data?.token) {
-      localStorage.setItem('authToken', response.data.token);
-    }
-    
+    // if (response?.jwt) {
+    //   localStorage.setItem('token', response.jwt);
+    // }
     return response;
   },
 
-  // Request OTP for email or mobile verification
-  requestOTP: async (identifier: string): Promise<ApiResponse> => {
-    return await makeApiRequest('/auth/request-otp', {
+  // Request OTP for email
+  requestOTPEmail: async (user_email: string) => {
+    return await makeApiRequest('/user/request-otp', {
       method: 'POST',
-      body: JSON.stringify({ identifier }),
+      body: JSON.stringify({ user_email }),
     });
+  },
+
+  // Request OTP for mobile (empty function for now)
+  requestOTPMobile: async (_user_mobile: string) => {
+    // TODO: Implement mobile OTP API when available
+    return Promise.resolve();
   },
 
   // Verify OTP
-  verifyOTP: async (identifier: string, otp: string): Promise<ApiResponse<AuthResponse>> => {
-    const response = await makeApiRequest('/auth/verify-otp', {
+  verifyOTP: async (identifier: { user_email?: string; user_mobile?: string }, otp: string) => {
+    return await makeApiRequest('/user/verify-otp', {
       method: 'POST',
-      body: JSON.stringify({ identifier, otp }),
+      body: JSON.stringify({ ...identifier, otp }),
     });
-    
-    // Store token if verification successful
-    if (response.data?.token) {
-      localStorage.setItem('authToken', response.data.token);
-    }
-    
-    return response;
   },
 
   // Sign out user
@@ -199,30 +194,26 @@ export const validators = {
   },
 
   isValidPassword: (password: string): boolean => {
-    return password && password.length >= 6;
+    return typeof password === 'string' && password.length >= 6;
   },
 
   validateSignupData: (data: SignupData) => {
     const errors: ValidationErrors = {};
     
-    if (!data.name || data.name.trim().length < 2) {
+    if (!data.user_name || data.user_name.trim().length < 2) {
       errors.name = 'Name must be at least 2 characters long';
     }
     
-    if (!validators.isEmail(data.email)) {
+    if (!validators.isEmail(data.user_email)) {
       errors.email = 'Please enter a valid email address';
     }
     
-    if (!validators.isMobile(data.mobile)) {
+    if (!validators.isMobile(data.user_mobile)) {
       errors.mobile = 'Please enter a valid 10-digit mobile number';
     }
     
-    if (!validators.isValidPassword(data.password)) {
+    if (!validators.isValidPassword(data.user_password)) {
       errors.password = 'Password must be at least 6 characters long';
-    }
-    
-    if (data.password !== data.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
     }
     
     return {
@@ -253,3 +244,6 @@ export const validators = {
 
 export { ApiError };
 export type { User, AuthResponse, SignupData, SigninData, ValidationErrors };
+
+
+
