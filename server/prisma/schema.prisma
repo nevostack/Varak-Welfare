@@ -8,11 +8,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Occupation {
+  SALARIED
+  UNEMPLOYED
+  STUDENT
+}
+
+enum Education{
+  HIGH_SCHOOL
+  BACHELORS
+  MASTERS
+}
+
 model User {
   user_id       String @id @default(auto()) @map("_id") @db.ObjectId
   user_name     String
   user_email    String  @unique
   user_mobile   String  @unique
   user_password String
+  pan_details   String? @default("")
+  gender        Gender? 
+  date_of_birth DateTime?
+  occupation    Occupation?
+  education     Education?
+  address       String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }
 

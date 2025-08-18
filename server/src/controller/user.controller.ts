@@ -66,6 +66,41 @@ export const createUser = async (req: Request, res: Response) => {
     }
 };
 
+export const getUserFromDB = async (req: Request, res: Response) => {
+    const authHeader = req.headers.authorization
+    if(!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+            authHeader
+        })
+    }
+
+    try {
+        const token = authHeader.split(" ")[1]
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string)
+        let userId = "";
+        if (typeof decoded === "object" && "userId" in decoded) {
+            userId = (decoded as jwt.JwtPayload).userId as string;
+        }
+        const user = await db.user.findUnique({
+            where: {
+                user_id: userId
+            }
+        })
+        res.status(201).json({
+            success: true,
+            user
+        })
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            error: error,
+            message: "Error Finding User"
+        })
+    }
+}
+
 // Get User By ID
 export const getUser = async (req: Request, res: Response) => {
     const authHeader = req.headers.authorization
@@ -184,7 +219,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error("Error updating user:", error);
-        return res.status(401).json({
+        return res.status(500).json({
             success: false,
             message: "Invalid or expired token",
             error
@@ -252,7 +287,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
         const token = jwt.sign(
-            { userId: user.user_id, email: user.user_email, phone: user.user_mobile },
+            { userId: user.user_id, email: user.user_email, phone: user.user_mobile, name: user.user_name },
             secret,
         );
 

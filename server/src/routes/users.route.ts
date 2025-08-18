@@ -54,5 +54,6 @@ router.post('/register', userController.createUser);
 router.put("/update", userController.updateUser)
 router.delete("/delete", userController.deleteUser)
 router.get("/profile", userController.getUser)
+router.get("/me", userController.getUserFromDB)
 
 export default router;
