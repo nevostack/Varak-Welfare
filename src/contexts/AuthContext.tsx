@@ -22,7 +22,7 @@ interface AuthContextType {
   isLoading: boolean;
   signIn: (userData: User) => void;
   signOut: () => void;
-  updateUser: (userData: Partial<User>) => void;
+  updateUser: (userData: Partial<User>) => void; 
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = () => {
     setUser(null);
-    // Use the API signout method which removes the token
+    localStorage.removeItem("token");// Use the API signout method which removes the token
     authApi.signout();
   };
 
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               headers: {
                 'Authorization': `Bearer ${token}`
               }
-            });
+            }); 
             
             const result = await response.json();
             if (result.status) {

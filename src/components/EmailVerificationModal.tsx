@@ -96,7 +96,7 @@ const EmailVerificationModal = ({
   const handleResendOTP = async () => {
     setIsResending(true);
     try {
-      await fetch('http://localhost:3000/api/user/request-otp', {
+      await fetch('http://localhost:3000/api/user/register-request-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_email }),

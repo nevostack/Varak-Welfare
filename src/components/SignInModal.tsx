@@ -391,6 +391,14 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
                     Click here
                   </button>
                 </div>
+                <div className="text-center mt-2">
+      <button
+        className="text-rose-600 hover:text-rose-700 font-medium hover:underline transition-colors text-sm"
+        onClick={() => setShowPasswordLogin(true)}
+      >
+        Sign in with password
+      </button>
+    </div>
               </>
             ) : (
               <>

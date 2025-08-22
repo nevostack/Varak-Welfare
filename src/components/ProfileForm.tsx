@@ -315,10 +315,9 @@ export function ProfileForm({ data }: ProfileFormProps) {
           )}
         />
         <p className="mt-4 text-sm">
-          Update Password{" "}
-          <span className="text-blue-500 text-sm">
-            <a href="">Reset</a>
-          </span>
+          <a href="/">
+          Update Password
+          </a>
         </p>
         <Button type="submit">Submit</Button>
       </form>

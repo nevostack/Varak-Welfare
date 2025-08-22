@@ -7,7 +7,6 @@ import dotenv from "dotenv"
 import otpStore from "../lib/otpStore";
 
 dotenv.config();
-
 // Register User
 export const createUser = async (req: Request, res: Response) => {
     const { user_name, user_email, user_password, user_mobile }: CreateUserInput = req.body;
@@ -54,7 +53,7 @@ export const createUser = async (req: Request, res: Response) => {
                 user_name: userSaved.user_name,
                 user_email: userSaved.user_email,
                 user_mobile: userSaved.user_mobile,
-            }, // Do not send password
+            },
         });
 
     } catch (error) {
@@ -347,4 +346,33 @@ export const verifyOTP = async (emailOrMobile: string, otp: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ emailOrMobile, otp }),
   }).then(res => res.json());
+};
+
+// Reset Password
+export const resetPassword = async (req: Request, res: Response) => {
+  const { user_email, new_password } = req.body;
+  if (!user_email || !new_password) {
+    return res.status(400).json({ success: false, message: "Email and new password required" });
+  }
+
+  try {
+    const user = await db.user.findUnique({
+        where: {user_email}
+    })
+    if(!user) {
+        res.status(404).json({
+            success: false,
+            message: "User not Found"
+        })
+    }
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    await db.user.update({
+      where: { user_email },
+      data: { user_password: hashedPassword }
+    });
+    return res.json({ success: true, message: "Password reset successful" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ success: false, message: "Failed to reset password" });
+  }
 };

@@ -33,8 +33,8 @@ const Profile = () => {
           "Authorization": `Bearer ${token}`,
         },
       });
-      const tanvi = await user.json();
-      setUserData(tanvi);
+      const data = await user.json();
+      setUserData(data);
     };
     getUserData();
   }, []);
