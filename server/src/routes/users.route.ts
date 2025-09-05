@@ -1,13 +1,38 @@
 import { Router } from 'express';
-import * as userController from '../controller/user.controller'
+import * as userController from '../controller/user.controller';
 import nodemailer from 'nodemailer';
 import otpStore from '../lib/otpStore';
 import dotenv from 'dotenv';
 import { db } from '../lib/db';
+import passport from "passport";
+import "../auth/google"; // Import the strategy
+import { generateToken } from "../auth/google";
 
 dotenv.config();
 
 const router = Router();
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+// Google OAuth routes
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    try {
+      // Generate JWT token for the authenticated user
+      const token = generateToken(req.user);
+
+      // Redirect to frontend with token
+      const frontendURL = process.env.FRONTEND_URL;
+      res.redirect(`${frontendURL}/auth/callback?token=${token}`);
+    } catch (error) {
+      console.error("Authentication error:", error);
+      res.redirect("/login?error=authentication_failed");
+    }
+  }
+);
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -82,5 +107,5 @@ router.delete("/delete", userController.deleteUser)
 router.get("/profile", userController.getUser)
 router.get("/me", userController.getUserFromDB)
 router.post("/reset-password", userController.resetPassword)
-
+// In your router file
 export default router;

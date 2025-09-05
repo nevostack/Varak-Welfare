@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import FundraiserSuccess from "./pages/FundraiserSuccess";
 import Profile from "./pages/Profile";
+import AuthCallback from "./components/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
             </Routes>
           </BrowserRouter>
         </div>

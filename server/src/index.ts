@@ -2,10 +2,15 @@ import express, {Request, Response} from 'express';
 import router from "./routes/index"
 import dotenv from "dotenv"
 import cors from 'cors';
+import session from "express-session";
+import passport from "passport";
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(session({ secret: "your_secret", resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

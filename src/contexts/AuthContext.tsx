@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { authApi } from '@/lib/api';
 import { signUp } from '@/api/auth';
@@ -21,6 +20,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   signIn: (userData: User) => void;
+  login: (userData: User) => void; // <-- Add this line
   signOut: () => void;
   updateUser: (userData: Partial<User>) => void; 
 }
@@ -45,9 +45,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signIn = (userData: User) => {
     setUser(userData);
-    localStorage.setItem('token', JSON.stringify(userData.token))
-    // localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', userData.token || "")
   };
+
+  // Add login as an alias for signIn
+  const login = signIn;
 
   const signOut = () => {
     setUser(null);
@@ -106,6 +108,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated: !!user,
     isLoading,
     signIn,
+    login, // <-- Add this line
     signOut,
     updateUser,
     signUp

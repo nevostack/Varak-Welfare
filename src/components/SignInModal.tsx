@@ -1,5 +1,11 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,15 +24,20 @@ interface SignInModalProps {
   onOpenStartFundraiser?: () => void;
 }
 
-const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalProps) => {
-  const [emailOrMobile, setEmailOrMobile] = useState('');
-  const [password, setPassword] = useState('');
+const SignInModal = ({
+  open,
+  onOpenChange,
+  onOpenStartFundraiser,
+}: SignInModalProps) => {
+  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [password, setPassword] = useState("");
   const [showPasswordLogin, setShowPasswordLogin] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
-  const [isMobileVerificationOpen, setIsMobileVerificationOpen] = useState(false);
+  const [isMobileVerificationOpen, setIsMobileVerificationOpen] =
+    useState(false);
   const [isEmailVerificationOpen, setIsEmailVerificationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [countryCode, setCountryCode] = useState('+91');
+  const [countryCode, setCountryCode] = useState("+91");
   const { toast } = useToast();
   const { signIn: authSignIn } = useAuth();
 
@@ -44,11 +55,11 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
   const handleSuccessfulLogin = (userData: any) => {
     // Pass the full user object to context
     authSignIn({
-      ...userData
+      ...userData,
       // avatar: userData.user.avatar,
     });
     // Store token in localStorage
-    localStorage.setItem('token', userData.jwt);
+    localStorage.setItem("token", userData.jwt);
 
     onOpenChange(false);
     resetForm();
@@ -64,6 +75,11 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
   //   setPassword('');
   //   setShowPasswordLogin(false);
   // };
+  const handleGoogleLogin = () => {
+    const apiBaseUrl =
+      import.meta.env.VITE_API_BASE_URL || "<http://localhost:3000/api>";
+    window.location.href = `${apiBaseUrl}/user/auth/google`;
+  };
 
   const handleGetOTP = async () => {
     if (!emailOrMobile.trim()) {
@@ -79,7 +95,8 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
     if (!isEmail(cleanInput) && !isMobileNumber(cleanInput)) {
       toast({
         title: "Invalid Input",
-        description: "Please enter a valid email address or 10-digit mobile number",
+        description:
+          "Please enter a valid email address or 10-digit mobile number",
         variant: "destructive",
       });
       return;
@@ -126,7 +143,11 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
     }
     setIsLoading(true);
     try {
-      let payload: { user_email?: string; user_mobile?: string; user_password: string } = {
+      let payload: {
+        user_email?: string;
+        user_mobile?: string;
+        user_password: string;
+      } = {
         user_password: password.trim(),
       };
       if (isEmail(emailOrMobile.trim())) {
@@ -152,21 +173,21 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
   };
 
   const handleGoogleSignIn = () => {
-    console.log('Google sign in clicked');
+    console.log("Google sign in clicked");
     toast({
       title: "Google Sign In",
       description: "Redirecting to Google OAuth...",
     });
-    
+
     // Simulate Google OAuth flow
     setTimeout(() => {
-      handleSuccessfulLogin('john.doe@gmail.com');
+      handleSuccessfulLogin("john.doe@gmail.com");
     }, 2000);
   };
 
   const handleBackToOTP = () => {
     setShowPasswordLogin(false);
-    setPassword('');
+    setPassword("");
   };
 
   const handleForgotPassword = () => {
@@ -176,7 +197,7 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
 
   const handleLoginViaOTP = () => {
     setShowPasswordLogin(false);
-    setPassword('');
+    setPassword("");
   };
 
   const handleMobileVerificationComplete = () => {
@@ -220,8 +241,8 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
   };
 
   const resetForm = () => {
-    setEmailOrMobile('');
-    setPassword('');
+    setEmailOrMobile("");
+    setPassword("");
     setShowPasswordLogin(false);
   };
 
@@ -278,16 +299,15 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
               </button>
             )}
             <DialogTitle className="text-xl sm:text-2xl font-semibold text-gray-900 px-8">
-              {showPasswordLogin ? 'Login with Password' : 'Login'}
+              {showPasswordLogin ? "Login with Password" : "Login"}
             </DialogTitle>
             {/* <DialogTitle className="text-xl sm:text-2xl font-semibold text-gray-900 px-8">
               {showPasswordLogin ? 'Login with Password' : 'Login'}
             </DialogTitle> */}
             <DialogDescription className="text-gray-600 text-sm mt-2 px-2">
-              {showPasswordLogin 
-                ? 'Enter your credentials to continue' 
-                : 'Enter your email or mobile number to get started'
-              }
+              {showPasswordLogin
+                ? "Enter your credentials to continue"
+                : "Enter your email or mobile number to get started"}
             </DialogDescription>
           </DialogHeader>
 
@@ -297,12 +317,15 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
               <div className="text-xl sm:text-2xl">🎁</div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs sm:text-sm text-gray-700">
-                  <span className="font-medium">Save a life with just ₹10 on the Varak App.</span>
-                </p>p
+                  <span className="font-medium">
+                    Save a life with just ₹10 on the Varak App.
+                  </span>
+                </p>
+                p
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="ml-auto text-rose-600 border-rose-300 hover:bg-rose-50 text-xs px-2 py-1 h-auto"
               >
                 Download
@@ -343,23 +366,22 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
                   </div>
                   {emailOrMobile && (
                     <p className="text-xs text-gray-500">
-                      {isMobileNumber(emailOrMobile) 
-                        ? '📱 Mobile number detected - OTP will be sent via SMS'
+                      {isMobileNumber(emailOrMobile)
+                        ? "📱 Mobile number detected - OTP will be sent via SMS"
                         : isEmail(emailOrMobile)
-                        ? '📧 Email detected - OTP will be sent to your inbox'
-                        : '⚠️ Please enter a valid email or 10-digit mobile number'
-                      }
+                        ? "📧 Email detected - OTP will be sent to your inbox"
+                        : "⚠️ Please enter a valid email or 10-digit mobile number"}
                     </p>
                   )}
                 </div>
 
                 {/* OTP Login Button */}
-                <Button 
+                <Button
                   onClick={handleGetOTP}
                   disabled={isLoading}
                   className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-medium py-2.5 sm:py-3 rounded-lg text-sm sm:text-base h-auto"
                 >
-                  {isLoading ? 'Sending OTP...' : 'Get OTP'}
+                  {isLoading ? "Sending OTP..." : "Get OTP"}
                 </Button>
 
                 <div className="relative">
@@ -373,18 +395,25 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
 
                 {/* Google Sign In */}
                 <Button
-                  onClick={handleGoogleSignIn}
+                  onClick={() => handleGoogleLogin()}
                   variant="outline"
+                  disabled={isLoading}
                   className="w-full border-gray-300 hover:bg-gray-50 py-2.5 sm:py-3 rounded-lg flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base h-auto"
                 >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    {/* You may want to add an SVG icon here for Google */}
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    {/* Google SVG */}
                   </svg>
                   Sign in with Google
                 </Button>
+
                 <div className="text-center text-sm text-gray-600 mt-2">
-                  Want to start a fundraiser?{' '}
-                  <button 
+                  Want to start a fundraiser?{" "}
+                  <button
                     className="text-rose-600 hover:text-rose-700 font-medium hover:underline transition-colors"
                     onClick={handleStartFundraiser}
                   >
@@ -392,20 +421,23 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
                   </button>
                 </div>
                 <div className="text-center mt-2">
-      <button
-        className="text-rose-600 hover:text-rose-700 font-medium hover:underline transition-colors text-sm"
-        onClick={() => setShowPasswordLogin(true)}
-      >
-        Sign in with password
-      </button>
-    </div>
+                  <button
+                    className="text-rose-600 hover:text-rose-700 font-medium hover:underline transition-colors text-sm"
+                    onClick={() => setShowPasswordLogin(true)}
+                  >
+                    Sign in with password
+                  </button>
+                </div>
               </>
             ) : (
               <>
                 {/* Password Login Form */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email" className="text-gray-600 text-sm">
+                    <Label
+                      htmlFor="login-email"
+                      className="text-gray-600 text-sm"
+                    >
                       Email / Mobile Number *
                     </Label>
                     <Input
@@ -431,33 +463,26 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
                       placeholder="Enter your password"
                     />
                   </div>
-                  
-                  {/* Demo Credentials Hint */}
-                  <div className="text-xs text-gray-500 bg-gray-50 p-2 sm:p-3 rounded">
-                    <strong>Demo Credentials:</strong><br />
-                    Email: demo@example.com / password123<br />
-                    Mobile: 9876543210 / mobile123
-                  </div>
                 </div>
 
                 {/* Login Button */}
-                <Button 
+                <Button
                   onClick={handlePasswordLogin}
                   disabled={isLoading}
                   className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-medium py-2.5 sm:py-3 rounded-lg text-sm sm:text-base h-auto"
                 >
-                  {isLoading ? 'Logging in...' : 'Login'}
+                  {isLoading ? "Logging in..." : "Login"}
                 </Button>
                 {/* Forgot Password and Login via OTP */}
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 text-center">
-                  <button 
+                  <button
                     onClick={handleForgotPassword}
                     className="text-rose-600 hover:text-rose-700 hover:underline text-sm font-medium"
                   >
                     Forgot Password?
                   </button>
                   <span className="text-gray-400 hidden sm:inline">|</span>
-                  <button 
+                  <button
                     onClick={handleLoginViaOTP}
                     className="text-rose-600 hover:text-rose-700 hover:underline text-sm font-medium"
                   >
@@ -467,8 +492,8 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
 
                 {/* Start Fundraiser Link for Password Login */}
                 <div className="text-center text-sm text-gray-600">
-                  Want to start a fundraiser?{' '}
-                  <button 
+                  Want to start a fundraiser?{" "}
+                  <button
                     className="text-rose-600 hover:text-rose-700 font-medium hover:underline transition-colors"
                     onClick={handleStartFundraiser}
                   >
@@ -480,19 +505,23 @@ const SignInModal = ({ open, onOpenChange, onOpenStartFundraiser }: SignInModalP
 
             {/* Terms */}
             <div className="text-center text-xs text-gray-500">
-              By continuing you agree to our{' '}
-              <button className="text-rose-600 hover:text-rose-700">Terms of Service</button>
-              {' '}and{' '}
-              <button className="text-rose-600 hover:text-rose-700">Privacy Policy</button>
+              By continuing you agree to our{" "}
+              <button className="text-rose-600 hover:text-rose-700">
+                Terms of Service
+              </button>{" "}
+              and{" "}
+              <button className="text-rose-600 hover:text-rose-700">
+                Privacy Policy
+              </button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Forgot Password Modal */}
-      <ForgotPasswordModal 
-        open={isForgotPasswordOpen} 
-        onOpenChange={setIsForgotPasswordOpen} 
+      <ForgotPasswordModal
+        open={isForgotPasswordOpen}
+        onOpenChange={setIsForgotPasswordOpen}
       />
 
       {/* Mobile Verification Modal */}

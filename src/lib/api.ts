@@ -89,7 +89,7 @@ const makeApiRequest = async (
   };
 
   // Add auth token if available
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers!["Authorization"] = `Bearer ${token}`;
   }
@@ -120,7 +120,7 @@ export const authApi = {
 
     // Store token if signup successful
     if (response.data?.token) {
-      localStorage.setItem("authToken", response.data.token);
+      localStorage.setItem("token", response.data.token);
     }
 
     return response;
@@ -169,7 +169,7 @@ export const authApi = {
 
   // Sign out user
   signout: (): void => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
   },
 };

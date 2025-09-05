@@ -3,6 +3,7 @@ import userRouter from './users.route'
 
 const router = Router();
 
+// /api/user/
 router.use("/user", userRouter) 
 
 
