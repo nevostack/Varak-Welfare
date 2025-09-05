@@ -159,7 +159,7 @@ const Header = () => {
                   >
                     Start Fundraiser
                   </Button>
-                  <UserProfile user={user.user} onSignOut={handleSignOut} />
+                  <UserProfile onSignOut={handleSignOut} />
                 </>
               ) : (
                 <>

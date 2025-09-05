@@ -3,6 +3,7 @@ import { ProfileForm } from "@/components/ProfileForm";
 import React, { useEffect, useState } from "react";
 import { userApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { redirect } from "react-router-dom";
 
 type UserData = {
   success: boolean;

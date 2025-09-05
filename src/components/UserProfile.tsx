@@ -13,20 +13,50 @@ import { Button } from "@/components/ui/button";
 import { User, Settings, Heart, LogOut, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link, redirect } from 'react-router-dom';
+import {useEffect} from 'react'
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfileProps {
-  user?: {
-    user_id?: string
-    user_name?: string
-    user_email?: string
-    user_mobile?: string
-  }
   // avatar?: string
   onSignOut: () => void;
 }
 
-const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
+type UserData = {
+  success: boolean;
+  user: {
+    user_name?: string;
+    user_email?: string;
+    user_mobile?: string;
+    user_password?: string;
+    pan_details?: string;
+    gender?: "MALE" | "FEMALE" | "OTHER";
+    date_of_birth?: Date;
+    occupation?: "SALARIED" | "UNEMPLOYED" | "STUDENT";
+    education?: "HIGH_SCHOOL" | "BACHELORS" | "MASTERS";
+    address?: string;
+  };
+};
+
+
+const UserProfile = ({ onSignOut }: UserProfileProps) => {
   const { toast } = useToast();
+  const [user, setUserData] = useState<UserData | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+    const getUserData = async () => {
+      const user = await fetch(`${API_BASE_URL}/user/me`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      const data = await user.json();
+      setUserData(data);
+    };
+    getUserData();
+  }, []);
 
   const handleSignOut = () => {
     onSignOut();
@@ -77,9 +107,9 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-rose-50">
           <Avatar className="h-10 w-10 border-2 border-rose-200">
-            <AvatarImage src={''} alt={user?.user_name} />
+            <AvatarImage src={''} alt={user?.user.user_name} />
             <AvatarFallback className="bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium">
-              {getInitials(user?.user_name)}
+              {getInitials(user?.user.user_name)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -89,8 +119,8 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
         {/* User Info */}
         <DropdownMenuLabel className="px-3 py-2">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium text-gray-900">{user?.user_name}</p>
-            <p className="text-xs text-gray-500">{user?.user_email}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.user?.user_name}</p>
+            <p className="text-xs text-gray-500">{user?.user?.user_email}</p>
           </div>
         </DropdownMenuLabel>
         
@@ -145,3 +175,4 @@ const UserProfile = ({ user, onSignOut }: UserProfileProps) => {
 };
 
 export default UserProfile;
+

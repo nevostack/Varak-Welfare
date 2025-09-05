@@ -43,9 +43,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const signIn = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('token', userData.token || "")
+  const fetchAndSetUser = async (token: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/user/profile`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      const result = await response.json();
+      console.log(result)
+      if (result.success) {
+        setUser(result.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  const signIn = async (userData: User) => {
+    const token = userData.token || "";
+    localStorage.setItem('token', token);
+    await fetchAndSetUser(token);
   };
 
   // Add login as an alias for signIn
@@ -82,8 +103,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }); 
             
             const result = await response.json();
-            if (result.status) {
-              setUser(result.data);
+            console.log(result)
+            if (result.success) {
+              setUser(result.user);
             } else {
               // Token might be invalid, but keep stored user data
               setUser(null);
@@ -108,7 +130,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated: !!user,
     isLoading,
     signIn,
-    login, // <-- Add this line
+    login,
     signOut,
     updateUser,
     signUp
@@ -120,3 +142,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     </AuthContext.Provider>
   );
 };
+

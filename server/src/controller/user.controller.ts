@@ -114,10 +114,18 @@ export const getUser = async (req: Request, res: Response) => {
     try {
         const token = authHeader.split(" ")[1]
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string)
-        res.status(200).json({
-            status: true,
-            message: "User Found",
-            data : decoded
+        let userId = "";
+        if (typeof decoded === "object" && "userId" in decoded) {
+            userId = (decoded as jwt.JwtPayload).userId as string;
+        }   
+        const user = await db.user.findUnique({
+            where: {
+                user_id: userId
+            }
+        })
+        res.status(201).json({
+            success: true,
+            user
         })
     } catch (error: any) {
         res.status(500).json({

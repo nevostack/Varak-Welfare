@@ -69,12 +69,7 @@ const SignInModal = ({
       description: `Welcome to Varak Welfare! You're now signed in as ${userData.user.user_name}`,
     });
   };
-
-  // const resetForm = () => {
-  //   setEmailOrMobile('');
-  //   setPassword('');
-  //   setShowPasswordLogin(false);
-  // };
+  
   const handleGoogleLogin = () => {
     const apiBaseUrl =
       import.meta.env.VITE_API_BASE_URL || "<http://localhost:3000/api>";
@@ -170,19 +165,6 @@ const SignInModal = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleSignIn = () => {
-    console.log("Google sign in clicked");
-    toast({
-      title: "Google Sign In",
-      description: "Redirecting to Google OAuth...",
-    });
-
-    // Simulate Google OAuth flow
-    setTimeout(() => {
-      handleSuccessfulLogin("john.doe@gmail.com");
-    }, 2000);
   };
 
   const handleBackToOTP = () => {

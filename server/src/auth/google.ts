@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 // Generate JWT token for authenticated users
 export const generateToken = (user: any) => {
   return jwt.sign(
-    { id: user.user_id, email: user.user_email },
+    { userId: user.user_id, email: user.user_email },
     process.env.JWT_SECRET || "fallback-secret",
     { expiresIn: "7d" }
   );

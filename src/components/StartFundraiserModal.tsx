@@ -222,42 +222,62 @@ const StartFundraiserModal = ({
     }
   };
 
-  const handleVerificationComplete = () => {
+  const handleVerificationComplete = async () => {
     const userData = {
       user_name: formData.user_name,
       user_email: formData.user_email,
       user_password: formData.user_password,
       user_mobile: formData.user_mobile,
     };
-    signUp(userData);
-    setTimeout(() => {
-      const res: any = signIn(formData.user_email, formData.user_password);
-      authSignIn({
-        ...res
-      })
-    }, 1500);
 
-    setShowMobileVerification(false);
-    onOpenChange(false);
+    try {
+      // Wait for registration to complete
+      await signUp(userData);
 
-    toast({
-      title: "Registration Complete!",
-      description: `Welcome ${formData.user_name}! You're now signed in and can start your fundraiser.`,
-    });
+      // Wait for sign in and get the response
+      const res: any = await signIn(formData.user_email, formData.user_password);
+      const data = await res.json()
 
-    // Reset form
-    setFormData({
-      user_name: "",
-      user_email: "",
-      user_password: "",
-      user_mobile: "",
-    });
-    setErrors({
-      user_name: "",
-      user_mobile: "",
-      user_password: "",
-      user_email: "",
-    });
+      // Extract token from response and pass to authSignIn
+      if (data) {
+        authSignIn({ token: data.jwt });
+      } else {
+        // handle error
+        toast({
+          title: "Login failed",
+          description: "Could not log in after registration.",
+          variant: "destructive",
+        });
+      }
+
+      setShowMobileVerification(false);
+      onOpenChange(false);
+
+      toast({
+        title: "Registration Complete!",
+        description: `Welcome ${formData.user_name}! You're now signed in and can start your fundraiser.`,
+      });
+
+      // Reset form
+      setFormData({
+        user_name: "",
+        user_email: "",
+        user_password: "",
+        user_mobile: "",
+      });
+      setErrors({
+        user_name: "",
+        user_mobile: "",
+        user_password: "",
+        user_email: "",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to register or login. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBackToForm = () => {
