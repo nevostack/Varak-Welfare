@@ -234,44 +234,46 @@ const StartFundraiserModal = ({
       // Wait for registration to complete
       await signUp(userData);
 
-      // Wait for sign in and get the response
-      const res: any = await signIn(formData.user_email, formData.user_password);
-      const data = await res.json()
+      // Login after successful registration
+      const response = await signIn(formData.user_email, formData.user_password);
+      
+      if (response && response.data) {
+        // The response from axios already contains parsed JSON data
+        const { jwt, user } = response.data;
+        
+        if (jwt) {
+          // Pass both the token and user data to authSignIn
+          authSignIn({ token: jwt, ...user });
+          
+          setShowEmailVerification(false);
+          onOpenChange(false);
 
-      // Extract token from response and pass to authSignIn
-      if (data) {
-        authSignIn({ token: data.jwt });
+          toast({
+            title: "Registration Complete!",
+            description: `Welcome ${formData.user_name}! You're now signed in and can start your fundraiser.`,
+          });
+
+          // Reset form
+          setFormData({
+            user_name: "",
+            user_email: "",
+            user_password: "",
+            user_mobile: "",
+          });
+          setErrors({
+            user_name: "",
+            user_mobile: "",
+            user_password: "",
+            user_email: "",
+          });
+        } else {
+          throw new Error("No token received");
+        }
       } else {
-        // handle error
-        toast({
-          title: "Login failed",
-          description: "Could not log in after registration.",
-          variant: "destructive",
-        });
+        throw new Error("Invalid response from login");
       }
-
-      setShowMobileVerification(false);
-      onOpenChange(false);
-
-      toast({
-        title: "Registration Complete!",
-        description: `Welcome ${formData.user_name}! You're now signed in and can start your fundraiser.`,
-      });
-
-      // Reset form
-      setFormData({
-        user_name: "",
-        user_email: "",
-        user_password: "",
-        user_mobile: "",
-      });
-      setErrors({
-        user_name: "",
-        user_mobile: "",
-        user_password: "",
-        user_email: "",
-      });
     } catch (err) {
+      console.error("Registration/login error:", err);
       toast({
         title: "Error",
         description: "Failed to register or login. Please try again.",

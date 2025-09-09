@@ -53,21 +53,42 @@ const SignInModal = ({
 
   // Function to handle successful login
   const handleSuccessfulLogin = (userData: any) => {
-    // Pass the full user object to context
-    authSignIn({
-      ...userData,
-      // avatar: userData.user.avatar,
-    });
-    // Store token in localStorage
-    localStorage.setItem("token", userData.jwt);
-
+    // Check what structure we have and handle accordingly
+    if (userData.data) {
+      // Response comes from authApi.signin()
+      const { jwt, user } = userData.data;
+      
+      // Pass both token and user data to authSignIn
+      authSignIn({ token: jwt, ...user });
+      
+      // Store token in localStorage
+      localStorage.setItem("token", jwt);
+      
+      toast({
+        title: "Login Successful",
+        description: `Welcome to Varak Welfare! You're now signed in as ${user.user_name}`,
+      });
+    } else {
+      // Direct userData object (used elsewhere)
+      authSignIn(userData);
+      
+      // Store token if available
+      if (userData.token) {
+        localStorage.setItem("token", userData.token);
+      } else if (userData.jwt) {
+        localStorage.setItem("token", userData.jwt);
+      }
+      
+      const userName = userData.user_name || (userData.user && userData.user.user_name) || "User";
+      
+      toast({
+        title: "Login Successful",
+        description: `Welcome to Varak Welfare! You're now signed in as ${userName}`,
+      });
+    }
+    
     onOpenChange(false);
     resetForm();
-
-    toast({
-      title: "Login Successful",
-      description: `Welcome to Varak Welfare! You're now signed in as ${userData.user.user_name}`,
-    });
   };
   
   const handleGoogleLogin = () => {
@@ -152,10 +173,6 @@ const SignInModal = ({
       }
       const res = await authApi.signin(payload);
       handleSuccessfulLogin(res);
-      toast({
-        title: "Login Successful",
-        description: `Welcome, ${res.data.user.name}`,
-      });
     } catch (err: any) {
       toast({
         title: "Login Failed",
@@ -194,13 +211,10 @@ const SignInModal = ({
       // Call login API with OTP
       const res = await authApi.signin({
         user_email: emailOrMobile.trim(),
-        otp: otp, // Pass the verified OTP here
+        otp: otp,
       });
+      
       handleSuccessfulLogin(res);
-      // toast({
-      //   title: "Login Successful",
-      //   description: `Welcome, ${res.user.user_name}`,
-      // });
     } catch (error: any) {
       toast({
         title: "Login Failed",
