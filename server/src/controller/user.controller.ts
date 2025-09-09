@@ -213,9 +213,11 @@ export const updateUser = async (req: Request, res: Response) => {
             });
         }
 
+        // No need to modify the update function as it will accept all fields from req.body
+        // including the new user_avatar field
         const updatedUser = await db.user.update({
             where: { user_id: decoded.userId },
-            data: req.body
+            data: req.body // This will now include user_avatar if provided
         });
 
         return res.status(200).json({

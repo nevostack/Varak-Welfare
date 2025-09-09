@@ -2,8 +2,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Add more imports as needed for the Avatar component
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { Camera } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +50,7 @@ const formSchema = z.object({
   user_email: z.string().email({
     message: "Please enter a valid email address.",
   }),
+  user_avatar: z.string().optional(),
   user_mobile: z
     .string()
     .min(10)
@@ -66,6 +76,7 @@ interface ProfileFormProps {
     user_email?: string;
     user_mobile?: string;
     user_password?: string;
+    user_avatar?: string;
     pan_details?: string;
     gender?: "MALE" | "FEMALE" | "OTHER";
     date_of_birth?: Date;
@@ -75,24 +86,111 @@ interface ProfileFormProps {
   };
 }
 
+// Helper function to compress images
+const compressImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        // Set maximum dimensions
+        const MAX_WIDTH = 500;
+        const MAX_HEIGHT = 500;
+        
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = height * (MAX_WIDTH / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = width * (MAX_HEIGHT / height);
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Get compressed image as base64 string with reduced quality
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // 0.7 quality (70%)
+        resolve(compressedBase64);
+      };
+      img.onerror = (error) => {
+        reject(error);
+      };
+    };
+    reader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
 export function ProfileForm({ data }: ProfileFormProps) {
   const { toast } = useToast();
   const token = localStorage.getItem("token");
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(data?.user_avatar || null);
+  const { updateUser } = useAuth(); // Add this line to get the updateUser function
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      user_name: data.user_name || "",
-      user_email: data.user_email || "",
-      user_mobile: data.user_mobile || "",
-      pan_details: data.pan_details || "",
-      gender: data.gender || "MALE",
-      date_of_birth: data.date_of_birth || new Date(),
-      education: data.education || "HIGH_SCHOOL",
-      occupation: data.occupation || "SALARIED",
-      address: data.address || "",
+      user_name: data?.user_name || "",
+      user_email: data?.user_email || "",
+      user_mobile: data?.user_mobile || "",
+      user_avatar: data?.user_avatar || "",
+      pan_details: data?.pan_details || "",
+      gender: data?.gender || "MALE",
+      date_of_birth: data?.date_of_birth 
+        ? (typeof data.date_of_birth === 'string' 
+           ? new Date(data.date_of_birth) 
+           : data.date_of_birth) 
+        : new Date(),
+      education: data?.education || "HIGH_SCHOOL",
+      occupation: data?.occupation || "SALARIED",
+      address: data?.address || "",
     },
   });
+
+  // Handle file upload and convert to base64
+  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (limit to 5MB for original file)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Profile picture must be less than 5MB"
+        });
+        return;
+      }
+
+      try {
+        // Compress the image
+        const compressedBase64 = await compressImage(file);
+        
+        setAvatarPreview(compressedBase64);
+        form.setValue("user_avatar", compressedBase64);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error processing image",
+          description: "Failed to process the image. Please try another."
+        });
+      }
+    }
+  };
 
   useEffect(() => {
     if (data) {
@@ -100,42 +198,104 @@ export function ProfileForm({ data }: ProfileFormProps) {
         user_name: data.user_name || "",
         user_email: data.user_email || "",
         user_mobile: data.user_mobile || "",
+        user_avatar: data.user_avatar || "",
         pan_details: data.pan_details || "",
         gender: data.gender || "MALE",
-        date_of_birth: data.date_of_birth || new Date(),
+        // Convert string date to Date object if it's a string
+        date_of_birth: data.date_of_birth 
+          ? (typeof data.date_of_birth === 'string' 
+             ? new Date(data.date_of_birth) 
+             : data.date_of_birth) 
+          : new Date(),
         education: data.education || "HIGH_SCHOOL",
         occupation: data.occupation || "SALARIED",
         address: data.address || "",
       });
+      
+      // Set avatar preview from data
+      if (data.user_avatar) {
+        setAvatarPreview(data.user_avatar);
+      }
     }
   }, [data, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await fetch(`${API_BASE_URL}/user/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(values)
-    })
-    const result = await res.json();
-    if(!result.success) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/user/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(values)
+      });
+      
+      const result = await res.json();
+      
+      if (!result.success) {
+        toast({
+          variant: "destructive",
+          title: "Couldn't Update User",
+          description: result.error || "An error occurred while updating your profile"
+        });
+        return;
+      }
+      
+      // Update the auth context with the new user data including the avatar
+      updateUser({ 
+        ...result.data,
+        user_avatar: values.user_avatar 
+      });
+      
+      toast({
+        variant: "default",
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully"
+      });
+    } catch (error) {
       toast({
         variant: "destructive",
-        title: "Couldn't Update User",
-        description: result.error
-      })
+        title: "Update Failed",
+        description: "There was a problem connecting to the server"
+      });
     }
-    toast({
-      variant: "default",
-      title: "User Updated"
-    })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Add Avatar Upload Component */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="relative group">
+            <Avatar className="h-24 w-24 border-2 border-rose-200">
+              <AvatarImage src={avatarPreview || ""} alt={data.user_name} />
+              <AvatarFallback className="bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xl font-medium">
+                {data.user_name?.split(" ").map(name => name[0]).join("").toUpperCase().slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+            <label 
+              htmlFor="avatar-upload" 
+              className="absolute bottom-0 right-0 bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-full cursor-pointer shadow-md transition-colors"
+            >
+              <Camera className="h-4 w-4" />
+              <input 
+                id="avatar-upload" 
+                type="file" 
+                accept="image/jpeg, image/png, image/gif" 
+                className="hidden" 
+                onChange={handleAvatarChange}
+              />
+            </label>
+          </div>
+          <FormDescription className="mt-2 text-center">
+            Upload a profile picture (max 1MB)
+          </FormDescription>
+          <FormField
+            control={form.control}
+            name="user_avatar"
+            render={() => <></>}
+          />
+        </div>
         <FormField
           control={form.control}
           name="user_name"

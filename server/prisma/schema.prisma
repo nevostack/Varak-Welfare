@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -32,6 +31,7 @@ model User {
   user_email    String  @unique
   user_mobile   String  @unique
   user_password String
+  user_avatar   String? // Add this field for storing base64 profile image
   pan_details   String? @default("")
   gender        Gender? 
   date_of_birth DateTime?

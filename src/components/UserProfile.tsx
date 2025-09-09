@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -28,6 +27,7 @@ type UserData = {
     user_email?: string;
     user_mobile?: string;
     user_password?: string;
+    user_avatar?: string; // Add this line
     pan_details?: string;
     gender?: "MALE" | "FEMALE" | "OTHER";
     date_of_birth?: Date;
@@ -107,7 +107,7 @@ const UserProfile = ({ onSignOut }: UserProfileProps) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-rose-50">
           <Avatar className="h-10 w-10 border-2 border-rose-200">
-            <AvatarImage src={''} alt={user?.user.user_name} />
+            <AvatarImage src={user?.user.user_avatar} alt={user?.user.user_name} />
             <AvatarFallback className="bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium">
               {getInitials(user?.user.user_name)}
             </AvatarFallback>
