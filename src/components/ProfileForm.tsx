@@ -219,6 +219,14 @@ export function ProfileForm({ data }: ProfileFormProps) {
     }
   }, [data, form]);
 
+  // In ProfileForm.tsx
+  // Add this useEffect to initialize avatarPreview
+  useEffect(() => {
+    if (data?.user_avatar) {
+      setAvatarPreview(data.user_avatar);
+    }
+  }, [data]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const res = await fetch(`${API_BASE_URL}/user/update`, {
@@ -268,9 +276,18 @@ export function ProfileForm({ data }: ProfileFormProps) {
         <div className="flex flex-col items-center mb-6">
           <div className="relative group">
             <Avatar className="h-24 w-24 border-2 border-rose-200">
-              <AvatarImage src={avatarPreview || ""} alt={data.user_name} />
+              <AvatarImage 
+                src={avatarPreview || ""} 
+                alt={data?.user_name} 
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  console.error("Error loading avatar:", e);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
               <AvatarFallback className="bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xl font-medium">
-                {data.user_name?.split(" ").map(name => name[0]).join("").toUpperCase().slice(0, 2)}
+                {data?.user_name?.split(" ").map(name => name[0]).join("").toUpperCase().slice(0, 2)}
               </AvatarFallback>
             </Avatar>
             <label 
@@ -284,6 +301,8 @@ export function ProfileForm({ data }: ProfileFormProps) {
                 accept="image/jpeg, image/png, image/gif" 
                 className="hidden" 
                 onChange={handleAvatarChange}
+                title="Upload profile picture"
+                placeholder="Upload profile picture"
               />
             </label>
           </div>

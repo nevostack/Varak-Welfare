@@ -27,9 +27,15 @@ passport.use(
           return done(new Error("No email found in Google profile"), false);
         }
 
+        // Get profile photo from Google
+        const profilePhoto = profile.photos && profile.photos.length > 0 
+          ? profile.photos[0].value 
+          : undefined;
+
         let user = await db.user.findUnique({ where: { user_email: email } });
 
         if (!user) {
+          // Create new user with profile photo
           user = await db.user.create({
             data: {
               user_name: profile.displayName,
@@ -38,8 +44,23 @@ passport.use(
               user_mobile: "",
               auth_provider: "google",
               google_id: profile.id,
+              user_avatar: profilePhoto, // Store the profile photo URL
             },
           });
+        } else {
+          // Update existing user with new profile photo if available
+          if (profilePhoto) {
+            user = await db.user.update({
+              where: { user_email: email },
+              data: { 
+                user_avatar: profilePhoto,
+                // Update auth provider if user was previously registered normally
+                // but now using Google
+                auth_provider: "google",
+                google_id: profile.id
+              }
+            });
+          }
         }
 
         return done(null, user);

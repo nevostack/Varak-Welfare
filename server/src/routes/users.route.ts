@@ -46,23 +46,41 @@ const transporter = nodemailer.createTransport({
 router.post('/request-otp', async (req, res) => {
   const { user_email } = req.body;
 
-  const user = await db.user.findUnique({ where: { user_email } });
-  if (!user) {
-    res.status(404).json({ success: false, message: 'User not found' });
-  } 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStore[user_email] = otp; 
-
   try {
+    // Check if user exists
+    const user = await db.user.findUnique({ where: { user_email } });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'user_not_found',
+        details: 'No account found with this email. Please register first.' 
+      });
+    }
+    
+    // Check if user is registered via Google
+    if (user.auth_provider === 'google') {
+      return res.status(400).json({ 
+        success: false, 
+        message: "google_account",
+        details: "This email is linked to a Google account. Please sign in with Google." 
+      });
+    }
+    
+    // User exists with regular account, send OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStore[user_email] = otp;
+
     await transporter.sendMail({
       from: process.env.GOOGLE_EMAIL,
       to: user_email,
       subject: 'Your OTP Code',
       text: `Your OTP code is ${otp}`,
     });
+    
     res.json({ success: true, message: 'OTP sent to email' });
   } catch (error) {
-    console.error(error); // Log error for debugging
+    console.error(error);
     res.status(500).json({ success: false, message: 'Failed to send OTP' });
   }
 });
@@ -70,19 +88,45 @@ router.post('/request-otp', async (req, res) => {
 //GENERATE OTP FOR LOGIN AND FORGET PASSWORD
 router.post('/register-request-otp', async (req, res) => {
   const { user_email } = req.body;
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStore[user_email] = otp; 
-
+  
   try {
+    // Check if email already exists in database
+    const existingUser = await db.user.findUnique({ 
+      where: { user_email } 
+    });
+    
+    if (existingUser) {
+      // If user exists and is registered via Google
+      if (existingUser.auth_provider === 'google') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "google_account",
+          details: "This email is already registered with Google. Please sign in with Google."
+        });
+      }
+      
+      // If user exists with regular account
+      return res.status(409).json({ 
+        success: false, 
+        message: "email_exists", 
+        details: "An account with this email already exists. Please sign in instead."
+      });
+    }
+    
+    // Email doesn't exist, proceed with OTP generation and sending
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStore[user_email] = otp;
+    
     await transporter.sendMail({
       from: process.env.GOOGLE_EMAIL,
       to: user_email,
       subject: 'Your OTP Code',
       text: `Your OTP code is ${otp}`,
     });
+    
     res.json({ success: true, message: 'OTP sent to email' });
   } catch (error) {
-    console.error(error); // Log error for debugging
+    console.error(error);
     res.status(500).json({ success: false, message: 'Failed to send OTP' });
   }
 });

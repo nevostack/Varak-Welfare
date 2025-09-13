@@ -106,30 +106,76 @@ const SignInModal = ({
       });
       return;
     }
+    
     const cleanInput = emailOrMobile.trim();
-
     if (!isEmail(cleanInput) && !isMobileNumber(cleanInput)) {
       toast({
         title: "Invalid Input",
-        description:
-          "Please enter a valid email address or 10-digit mobile number",
+        description: "Please enter a valid email address or 10-digit mobile number",
         variant: "destructive",
       });
       return;
     }
-
+    
     setIsLoading(true);
-
     try {
       if (isEmail(cleanInput)) {
-        await authApi.requestOTPEmail(cleanInput);
+        const response = await authApi.requestOTPEmail(cleanInput);
+        
+        // Handle error cases returned from the API
+        if (!response.success) {
+          if (response.message === "google_account") {
+            toast({
+              title: "Google Account Detected",
+              description: "This email is linked to a Google account. Please sign in with Google instead.",
+              action: (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGoogleLogin}
+                  className="border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+                >
+                  Sign in with Google
+                </Button>
+              ),
+            });
+          } else if (response.message === "user_not_found") {
+            toast({
+              title: "Account Not Found",
+              description: "No account found with this email. Please register first.",
+              action: (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    onOpenChange(false);
+                    if (onOpenStartFundraiser) onOpenStartFundraiser();
+                  }}
+                  className="border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+                >
+                  Register
+                </Button>
+              ),
+            });
+          } else {
+            toast({
+              title: "Error",
+              description: "Failed to send OTP. Please try again.",
+              variant: "destructive",
+            });
+          }
+          setIsLoading(false);
+          return;
+        }
+        
         setIsEmailVerificationOpen(true);
         toast({
           title: "OTP Sent",
           description: `Verification code sent to ${cleanInput}. Please check your email.`,
         });
       } else if (isMobileNumber(cleanInput)) {
-        await authApi.requestOTPMobile(cleanInput); // Empty for now
+        // Mobile handling remains the same
+        await authApi.requestOTPMobile(cleanInput);
         setIsMobileVerificationOpen(true);
         toast({
           title: "OTP Sent",
@@ -174,11 +220,29 @@ const SignInModal = ({
       const res = await authApi.signin(payload);
       handleSuccessfulLogin(res);
     } catch (err: any) {
-      toast({
-        title: "Login Failed",
-        description: err.message || "Invalid credentials",
-        variant: "destructive",
-      });
+      // Check if this is a Google account error
+      if (err.data?.message === "google_account") {
+        toast({
+          title: "Google Account Detected",
+          description: "This email is linked to a Google account. Please sign in with Google instead.",
+          action: (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleGoogleLogin}
+              className="border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+            >
+              Sign in with Google
+            </Button>
+          ),
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: err.message || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -216,11 +280,29 @@ const SignInModal = ({
       
       handleSuccessfulLogin(res);
     } catch (error: any) {
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid OTP",
-        variant: "destructive",
-      });
+      // Check if this is a Google account error
+      if (error.data?.message === "google_account") {
+        toast({
+          title: "Google Account Detected",
+          description: "This email is linked to a Google account. Please sign in with Google instead.",
+          action: (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleGoogleLogin}
+              className="border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+            >
+              Sign in with Google
+            </Button>
+          ),
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: error.message || "Invalid OTP",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

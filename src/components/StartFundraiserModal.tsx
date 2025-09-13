@@ -173,7 +173,7 @@ const StartFundraiserModal = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!validateForm()) {
       toast({
         title: "Please fix the errors",
@@ -186,11 +186,64 @@ const StartFundraiserModal = ({
     setIsSubmitting(true);
 
     try {
-      await fetch("http://localhost:3000/api/user/register-request-otp", {
+      const response = await fetch("http://localhost:3000/api/user/register-request-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_email: formData.user_email }),
       });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        if (data.message === "google_account") {
+          toast({
+            title: "Google Account Detected",
+            description: "This email is already registered with Google. Please sign in with Google instead.",
+            action: (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  onOpenChange(false);
+                  if (onOpenSignIn) {
+                    onOpenSignIn(); // Open sign in modal
+                    // We could add a flag to automatically trigger Google sign in
+                  }
+                }}
+                className="border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+              >
+                Sign in with Google
+              </Button>
+            ),
+          });
+        } else if (data.message === "email_exists") {
+          toast({
+            title: "Email Already Registered",
+            description: "An account with this email already exists. Please sign in instead.",
+            action: (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  onOpenChange(false);
+                  if (onOpenSignIn) onOpenSignIn();
+                }}
+                className="border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+              >
+                Sign In
+              </Button>
+            ),
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: data.details || "Failed to send OTP. Please try again.",
+            variant: "destructive",
+          });
+        }
+        setIsSubmitting(false);
+        return;
+      }
 
       setIsSubmitting(false);
       setShowEmailVerification(true);
