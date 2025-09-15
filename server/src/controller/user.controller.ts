@@ -7,6 +7,7 @@ import dotenv from "dotenv"
 import otpStore from "../lib/otpStore";
 
 dotenv.config();
+
 // Register User
 export const createUser = async (req: Request, res: Response) => {
     const { user_name, user_email, user_password, user_mobile }: CreateUserInput = req.body;
@@ -213,11 +214,28 @@ export const updateUser = async (req: Request, res: Response) => {
             });
         }
 
-        // No need to modify the update function as it will accept all fields from req.body
-        // including the new user_avatar field
+        // Check if mobile number changed and if it's already used by another user
+        if (req.body.user_mobile && req.body.user_mobile !== userExists.user_mobile) {
+            const mobileExists = await db.user.findFirst({
+                where: {
+                    user_mobile: req.body.user_mobile,
+                    NOT: {
+                        user_id: decoded.userId
+                    }
+                }
+            });
+
+            if (mobileExists) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Mobile number already exists",
+                });
+            }
+        }
+
         const updatedUser = await db.user.update({
             where: { user_id: decoded.userId },
-            data: req.body // This will now include user_avatar if provided
+            data: req.body
         });
 
         return res.status(200).json({
@@ -230,7 +248,7 @@ export const updateUser = async (req: Request, res: Response) => {
         console.error("Error updating user:", error);
         return res.status(500).json({
             success: false,
-            message: "Invalid or expired token",
+            message: "An error occurred while updating the user",
             error
         });
     }
@@ -256,6 +274,15 @@ export const login = async (req: Request, res: Response) => {
             return res.status(404).json({
                 success: false,
                 message: "Invalid Credentials"
+            });
+        }
+
+        // Check if account is associated with Google
+        if (user.auth_provider === "google") {
+            return res.status(400).json({
+                success: false,
+                message: "google_account",
+                details: "This email is linked to a Google account. Please sign in with Google."
             });
         }
 

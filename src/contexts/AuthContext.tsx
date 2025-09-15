@@ -2,17 +2,22 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { authApi } from '@/lib/api';
 import { signUp } from '@/api/auth';
 
+// Add this updated User interface
 interface User {
-  success?: boolean
-  message?: string
-  token?: string
+  success?: boolean;
+  message?: string;
+  token?: string;
   user?: {
-    user_id?: string
-    user_name?: string
-    user_email?: string
-    user_mobile?: string
-  }
-  avatar?: string
+    user_id?: string;
+    user_name?: string;
+    user_email?: string;
+    user_mobile?: string;
+    user_avatar?: string; // Added this missing field
+  };
+  user_avatar?: string; // Allow for flat structure too
+  user_name?: string;
+  user_email?: string;
+  user_mobile?: string;
 }
 
 interface AuthContextType {
@@ -78,11 +83,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     authApi.signout();
   };
 
+  // Then update the updateUser function to handle both nested and flat structures
   const updateUser = (userData: Partial<User>) => {
     if (user) {
-      const updatedUser = { ...user, ...userData };
+      // Handle both flat and nested structures
+      const updatedUser = { 
+        ...user,
+        // Update top-level properties
+        ...userData,
+        // Also update nested user properties if they exist
+        user: user.user ? {
+          ...user.user,
+          ...(userData.user || {}),
+          // If top-level properties are provided, also update them in the nested user
+          user_avatar: userData.user_avatar || userData.user?.user_avatar || user.user.user_avatar,
+          user_name: userData.user_name || userData.user?.user_name || user.user.user_name,
+          user_email: userData.user_email || userData.user?.user_email || user.user.user_email,
+          user_mobile: userData.user_mobile || userData.user?.user_mobile || user.user.user_mobile,
+        } : undefined
+      };
+      
       setUser(updatedUser);
-      // localStorage.setItem('user', JSON.stringify(updatedUser));
+      console.log("Updated user:", updatedUser);
     }
   };
 

@@ -241,11 +241,20 @@ export function ProfileForm({ data }: ProfileFormProps) {
       const result = await res.json();
       
       if (!result.success) {
-        toast({
-          variant: "destructive",
-          title: "Couldn't Update User",
-          description: result.error || "An error occurred while updating your profile"
-        });
+        // Check specifically for duplicate mobile number error
+        if (result.message === "Mobile number already exists") {
+          toast({
+            variant: "destructive",
+            title: "Duplicate Mobile Number",
+            description: "This mobile number is already registered with another account."
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Couldn't Update User",
+            description: result.message || result.error || "An error occurred while updating your profile"
+          });
+        }
         return;
       }
       
@@ -261,6 +270,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
         description: "Your profile has been updated successfully"
       });
     } catch (error) {
+      console.error("Profile update error:", error);
       toast({
         variant: "destructive",
         title: "Update Failed",
@@ -301,8 +311,6 @@ export function ProfileForm({ data }: ProfileFormProps) {
                 accept="image/jpeg, image/png, image/gif" 
                 className="hidden" 
                 onChange={handleAvatarChange}
-                title="Upload profile picture"
-                placeholder="Upload profile picture"
               />
             </label>
           </div>

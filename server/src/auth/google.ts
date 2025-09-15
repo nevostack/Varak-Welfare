@@ -48,17 +48,22 @@ passport.use(
             },
           });
         } else {
-          // Update existing user with new profile photo if available
-          if (profilePhoto) {
+          // Update existing user but only update auth provider and google_id
+          // Do NOT update the avatar if the user already exists
+          user = await db.user.update({
+            where: { user_email: email },
+            data: { 
+              // Only update these fields, not the avatar
+              auth_provider: "google",
+              google_id: profile.id
+            }
+          });
+          
+          // Only set the Google avatar if the user doesn't already have an avatar
+          if (!user.user_avatar && profilePhoto) {
             user = await db.user.update({
               where: { user_email: email },
-              data: { 
-                user_avatar: profilePhoto,
-                // Update auth provider if user was previously registered normally
-                // but now using Google
-                auth_provider: "google",
-                google_id: profile.id
-              }
+              data: { user_avatar: profilePhoto }
             });
           }
         }
