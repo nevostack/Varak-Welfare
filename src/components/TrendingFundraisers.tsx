@@ -186,12 +186,13 @@ const TrendingFundraisers = () => {
                               raised of {formatCurrency(fundraiser.goal)}
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
+                          {/* <div className="w-full bg-gray-200 rounded-full h-3">
                             <div 
-                              className="h-full bg-gradient-to-r from-rose-500 to-pink-600 rounded-full transition-all duration-300"
+                              className={"h-full bg-gradient-to-r from-rose-500 to-pink-600 rounded-full transition-all duration-300"}
                               style={{ width: `${progressPercentage}%` }}
-                            />
-                          </div>
+                            >
+
+                          </div> */}
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-rose-600 font-bold">{progressPercentage}% completed</span>
                             <span className="text-gray-600 font-medium">

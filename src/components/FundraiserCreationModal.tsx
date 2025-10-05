@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, ArrowLeft, Check, Zap } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import StartFundraiserModal from "@/components/StartFundraiserModal";
 import FundraiserBasicForm from "@/components/fundraiser/FundraiserBasicForm";
@@ -115,6 +115,8 @@ const FundraiserCreationModal = ({ open, onOpenChange }: FundraiserCreationModal
 
   const handleSubmit = async () => {
     if (!isAuthenticated) {
+      // Request OTP for email before showing signup modal
+      await requestOtp(user?.user_email || "");
       setShowSignUp(true);
       return;
     }
@@ -128,7 +130,7 @@ const FundraiserCreationModal = ({ open, onOpenChange }: FundraiserCreationModal
       // Navigate to the success page with state data
       navigate('/fundraiser-success', {
         state: {
-          userName: user?.name || "",
+          userName: user?.user_name || "",
           fromFundraiserCreation: true
         }
       });
@@ -299,3 +301,20 @@ const FundraiserCreationModal = ({ open, onOpenChange }: FundraiserCreationModal
 };
 
 export default FundraiserCreationModal;
+
+// Example: To use 'user' and 'toast', define requestOtp inside the FundraiserCreationModal component.
+// Move the following function inside FundraiserCreationModal if needed:
+
+
+const requestOtp = async (user_email: string) => {
+  await fetch('/user/request-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_email }),
+  });
+
+  toast({
+    title: "OTP Sent",
+    description: `A verification code has been sent to your email: ${user_email}`,
+  });
+};

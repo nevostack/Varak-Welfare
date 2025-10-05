@@ -264,6 +264,7 @@ const FeaturedIn = () => {
               <button
                 key={index}
                 onClick={() => setCurrentPartner(index)}
+                aria-label={`Select partner: ${trustPartners[index].name}`}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentPartner 
                     ? 'bg-rose-500 w-8' 

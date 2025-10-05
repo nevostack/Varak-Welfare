@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Occupation {
+  SALARIED
+  UNEMPLOYED
+  STUDENT
+}
+
+enum Education{
+  HIGH_SCHOOL
+  BACHELORS
+  MASTERS
+}
+
+model User {
+  user_id       String @id @default(auto()) @map("_id") @db.ObjectId
+  user_name     String
+  user_email    String  @unique
+  user_mobile   String  @unique
+  user_password String
+  user_avatar   String? // Add this field for storing base64 profile image
+  pan_details   String? @default("")
+  gender        Gender? 
+  date_of_birth DateTime?
+  occupation    Occupation?
+  education     Education?
+  address       String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  auth_provider String?  // "local", "google", etc.
+  google_id     String?  @unique
+}
+

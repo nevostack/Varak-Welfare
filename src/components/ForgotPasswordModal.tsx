@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Lock, Mail, Clock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authApi } from "@/lib/api"; // Make sure this import exists
 
 interface ForgotPasswordModalProps {
   open: boolean;
@@ -36,26 +36,40 @@ const ForgotPasswordModal = ({ open, onOpenChange }: ForgotPasswordModalProps) =
     }
 
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setStep('otp');
-      setResendTimer(60);
-      const countdown = setInterval(() => {
-        setResendTimer((prev) => {
-          if (prev <= 1) {
-            clearInterval(countdown);
-            return 0;
-          }
-          return prev - 1;
+    try {
+      const res = await authApi.requestOTPEmail(email.trim());
+      if (res.success) {
+        setStep('otp');
+        setResendTimer(60);
+        const countdown = setInterval(() => {
+          setResendTimer((prev) => {
+            if (prev <= 1) {
+              clearInterval(countdown);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        toast({
+          title: "OTP Sent",
+          description: `Password reset OTP has been sent to ${email}`,
         });
-      }, 1000);
-      
+      } else {
+        toast({
+          title: "Error",
+          description: res.message || "Failed to send OTP",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "OTP Sent",
-        description: `Password reset OTP has been sent to ${email}`,
+        title: "Error",
+        description: error.message || "Failed to send OTP",
+        variant: "destructive",
       });
-    }, 1500);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOTP = async () => {
@@ -68,25 +82,32 @@ const ForgotPasswordModal = ({ open, onOpenChange }: ForgotPasswordModalProps) =
       return;
     }
 
-    if (otp !== '123456') {
+    setIsLoading(true);
+    try {
+      // Call backend to verify OTP
+      const res = await authApi.verifyOTP({ user_email: email.trim() }, otp.trim());
+      if (res.success) {
+        setStep('reset');
+        toast({
+          title: "OTP Verified",
+          description: "Please set your new password",
+        });
+      } else {
+        toast({
+          title: "Invalid OTP",
+          description: res.message || "Please enter the correct OTP",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "Invalid OTP",
-        description: "Please enter the correct OTP",
+        title: "Error",
+        description: error.message || "Failed to verify OTP",
         variant: "destructive",
       });
-      return;
-    }
-
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    } finally {
       setIsLoading(false);
-      setStep('reset');
-      toast({
-        title: "OTP Verified",
-        description: "Please set your new password",
-      });
-    }, 1000);
+    }
   };
 
   const handleResetPassword = async () => {
@@ -118,15 +139,41 @@ const ForgotPasswordModal = ({ open, onOpenChange }: ForgotPasswordModalProps) =
     }
 
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/user/reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_email: email.trim(),
+            new_password: newPassword.trim(),
+          }),
+        }
+      );
+      const result = await res.json();
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Your password has been reset successfully",
+        });
+        handleClose();
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to reset password",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "Success",
-        description: "Your password has been reset successfully",
+        title: "Error",
+        description: error.message || "Failed to reset password",
+        variant: "destructive",
       });
-      handleClose();
-    }, 1500);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResendOTP = () => {
